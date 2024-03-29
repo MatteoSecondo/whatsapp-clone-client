@@ -1,29 +1,33 @@
-import { Avatar, IconButton } from '@mui/material'
 import '../public/Chat.css'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import SearchIcon from '@mui/icons-material/Search'
-import AttachFileIcon from '@mui/icons-material/AttachFile'
-import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon'
-import MicIcon from '@mui/icons-material/Mic'
-import SendIcon from '@mui/icons-material/Send';
-import { useEffect, useState } from 'react'
+import '../public/Sidebar.css'
+
+import { useEffect, useRef, useState } from 'react'
 import { useAudioRecorder } from 'react-audio-voice-recorder'
 import io from 'socket.io-client'
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
+import ChatBody from './basic/ChatBody'
+import ChatHeader from './basic/ChatHeader'
+import ChatFooter from './basic/ChatFooter'
 
 const Chat = ({ messages, setMessages }) => {
 
-    const [input, setInput] = useState('')
     const [socket, setSocket] = useState(null)
+    const [input, setInput] = useState('')
     const [recordingColor, setRecordingColor] = useState('gray')
     const [showEmoticons, setShowEmoticons] = useState(false)
+
+    const [searchString, setSearchString] = useState('')
+    const [showSearchInput, setShowSearchInput] = useState(false)
+    const [currentMessageIndex, setCurrentMessageIndex] = useState(null)
+    const messagesRef = useRef([])
+    const filteredMessagesRef = useRef([])
+
     const audioControls = useAudioRecorder()
 
     useEffect(() => {
         let temp = io('localhost:9000')
 
-        // Ascolto dell'evento "new-message"
         temp.on('new-message', (message) => {
             setMessages([...messages, message])  
         });
@@ -34,16 +38,35 @@ const Chat = ({ messages, setMessages }) => {
     }, [messages])
 
     useEffect(() => {
-        if (!audioControls.recordingBlob) return;
-    
-        // recordingBlob will be present at this point after 'stopRecording' has been called
+        if (!audioControls.recordingBlob) return
         sendMessage(new SubmitEvent('e'), audioControls.recordingBlob)
     }, [audioControls.recordingBlob])
+
+    useEffect(() => {
+        if (messagesRef.current) {
+            const searchResults = messagesRef.current
+            searchResults.forEach(result => {
+                if (result.textContent.toLowerCase().includes(searchString) && searchString !== '') {
+                    result.classList.add('highlight')
+                } else {
+                    result.classList.remove('highlight')
+                }
+            })
+
+            filteredMessagesRef.current = messagesRef.current.filter(ref => ref.classList.contains('highlight'))
+            //scrollToMessage(filteredMessagesRef.current.length - 1)
+            setCurrentMessageIndex(filteredMessagesRef.current.length - 1)
+        }
+    }, [searchString])
+
+    useEffect(() => {
+        setCurrentMessageIndex(messagesRef.current.length - 1)
+    }, [messagesRef.current.length])
 
     const sendMessage = async (e, blob = null) => {
         e.preventDefault();
         if (input === '' && !blob) return; 
-        const message = {name: 'Demo user', message: input, timestamp: new Date(Date.now()).toUTCString(), received: true}
+        const message = {name: 'Demo user', timestamp: new Date(Date.now()).toUTCString(), received: true}
 
         if (blob) {
             const reader = new FileReader();
@@ -60,7 +83,10 @@ const Chat = ({ messages, setMessages }) => {
             
             reader.readAsDataURL(blob);
         }
-        else socket.emit('send-message', message)
+        else {
+            message.message = input
+            socket.emit('send-message', message)
+        }
         setShowEmoticons(false)
         setInput('')
     }
@@ -81,70 +107,55 @@ const Chat = ({ messages, setMessages }) => {
         else setShowEmoticons(true)
     }
 
-    const searchMessage = () => {
-        
+    const searchMessage = (event) => {
+        setSearchString(event.target.value.toLowerCase());
+    }
+
+    const showPreviousMessage = () => {
+        const previousIndex = currentMessageIndex - 1
+        if (previousIndex >= 0) {
+            scrollToMessage(previousIndex)
+            setCurrentMessageIndex(previousIndex)
+        }
+        else scrollToMessage(currentMessageIndex)
+    }
+
+    const showNextMessage = () => {
+        const nextIndex = currentMessageIndex + 1
+        if (nextIndex < filteredMessagesRef.current.length) {
+            scrollToMessage(nextIndex)
+            setCurrentMessageIndex(nextIndex)
+        }
+        else scrollToMessage(currentMessageIndex)
+    }
+
+    const scrollToMessage = (index) => {
+        filteredMessagesRef.current[index].scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
 
     return (
         <div className="chat">
 
-            <div className="chat__header">
-                <Avatar />
-                <div className="chat__headerInfo">
-                    <h3>Room name</h3>
-                    <p>Last seen at ...</p>
-                </div>
+            <ChatHeader
+                showSearchInput={showSearchInput}
+                setShowSearchInput={setShowSearchInput}
+                searchString={searchString}
+                searchMessage={searchMessage}
+                showPreviousMessage={showPreviousMessage}
+                showNextMessage={showNextMessage}
+            />
 
-                <div className="chat__headerRight">
-                    <IconButton onClick={searchMessage}>
-                        <SearchIcon />
-                    </IconButton>
-                    <IconButton>
-                        <AttachFileIcon />
-                    </IconButton>
-                    <IconButton>
-                        <MoreVertIcon />
-                    </IconButton>
-                </div>
-            </div>
+            <ChatBody messages={messages} messagesRef={messagesRef} />
 
-            <div className="chat__body">
-                {messages.map((message) =>
-                    (
-                        <p key={message._id || Math.floor(Math.random() * 1000) + 1} className={`chat__message ${message.received && 'chat__receiver'}`}>
-                            <span className="chat__name">{message.name}</span>
-                            {!message?.audio ? <span>{message.message}</span> : <audio src={message.audio} controls></audio>}
-                            <span className="chat__timestamp">{message.timestamp}</span>
-                        </p>
-                    )
-                )}
-            </div>
-
-            <div className="chat__footer">
-                <IconButton onClick={toggleEmoticons}>
-                    <InsertEmoticonIcon />
-                </IconButton>
-                <form>
-                    <input
-                        value={input}
-                        type='text'
-                        placeholder='Type a message'
-                        onChange={(e) => setInput(e.target.value)}
-                        onClick={() => setShowEmoticons(false)}  
-                    />
-                    <button type='submit' onClick={sendMessage}>
-                        Send a message
-                    </button>
-                </form>
-                {input === '' ? 
-                <IconButton onClick={recordMessage} sx={{color: recordingColor}}>
-                     <MicIcon />
-                </IconButton> 
-                :
-                <IconButton onClick={sendMessage}>
-                    <SendIcon />
-                </IconButton>}
-            </div>
+            <ChatFooter 
+                toggleEmoticons={toggleEmoticons}
+                setShowEmoticons={setShowEmoticons}
+                input={input}
+                setInput={setInput}
+                sendMessage={sendMessage}
+                recordMessage={recordMessage}
+                recordingColor={recordingColor}
+            />
 
             {showEmoticons &&
             <Picker
