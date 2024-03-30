@@ -3,8 +3,11 @@ import { Avatar, IconButton } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import SearchIcon from '@mui/icons-material/Search'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import CloseIcon from '@mui/icons-material/Close';
 
-const ChatHeader = ({ showSearchInput, setShowSearchInput, searchString, searchMessage, showPreviousMessage, showNextMessage }) => {
+const ChatHeader = ({ showSearchInput, setShowSearchInput, closeSearchInput, searchString, searchMessage, disableButtons, showPreviousMessage, showNextMessage }) => {
     return (
         <div className="chat__header">
                 <Avatar />
@@ -17,9 +20,17 @@ const ChatHeader = ({ showSearchInput, setShowSearchInput, searchString, searchM
                     {showSearchInput &&
                     <div className="sidebar__search">
                         <div className="sidebar__searchContainer">
-                            <input type='text' placeholder='Search a message' value={searchString} onChange={(e) => searchMessage(e)}/>
-                            <button onClick={showPreviousMessage}>prev</button>
-                            <button onClick={showNextMessage}>next</button>
+                            <input type='text' placeholder='Search messages' value={searchString} onChange={(e) => searchMessage(e)} className='chat__search' />
+                            <IconButton onClick={showPreviousMessage} disabled={disableButtons}>
+                                <KeyboardArrowUpIcon />
+                            </IconButton>
+                            <IconButton onClick={showNextMessage} disabled={disableButtons}>
+                                <KeyboardArrowDownIcon />
+                            </IconButton>
+                            <IconButton onClick={closeSearchInput}>
+                                <CloseIcon />
+                            </IconButton>
+
                         </div>
                     </div>}
                     <IconButton onClick={() => setShowSearchInput(true)}>

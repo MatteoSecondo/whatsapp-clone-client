@@ -20,6 +20,7 @@ const Chat = ({ messages, setMessages }) => {
     const [searchString, setSearchString] = useState('')
     const [showSearchInput, setShowSearchInput] = useState(false)
     const [currentMessageIndex, setCurrentMessageIndex] = useState(null)
+    const [disableButtons, setDisableButtons] = useState(false)
     const messagesRef = useRef([])
     const filteredMessagesRef = useRef([])
 
@@ -29,8 +30,8 @@ const Chat = ({ messages, setMessages }) => {
         let temp = io('localhost:9000')
 
         temp.on('new-message', (message) => {
-            setMessages([...messages, message])  
-        });
+            setMessages([...messages, message])
+        })
 
         setSocket(temp)
         
@@ -52,14 +53,18 @@ const Chat = ({ messages, setMessages }) => {
                     result.classList.remove('highlight')
                 }
             })
+            
+            if (searchResults.filter(result => result.classList.contains('highlight')).length) setDisableButtons(false)
+            else setDisableButtons(true)
 
             filteredMessagesRef.current = messagesRef.current.filter(ref => ref.classList.contains('highlight'))
-            //scrollToMessage(filteredMessagesRef.current.length - 1)
+            if (filteredMessagesRef.current.length) scrollToMessage(filteredMessagesRef, filteredMessagesRef.current.length - 1)
             setCurrentMessageIndex(filteredMessagesRef.current.length - 1)
         }
     }, [searchString])
 
     useEffect(() => {
+        if(messagesRef.current.length) scrollToMessage(messagesRef, messagesRef.current.length -1)
         setCurrentMessageIndex(messagesRef.current.length - 1)
     }, [messagesRef.current.length])
 
@@ -114,23 +119,29 @@ const Chat = ({ messages, setMessages }) => {
     const showPreviousMessage = () => {
         const previousIndex = currentMessageIndex - 1
         if (previousIndex >= 0) {
-            scrollToMessage(previousIndex)
+            scrollToMessage(filteredMessagesRef, previousIndex)
             setCurrentMessageIndex(previousIndex)
         }
-        else scrollToMessage(currentMessageIndex)
+        else scrollToMessage(filteredMessagesRef, currentMessageIndex)
     }
 
     const showNextMessage = () => {
         const nextIndex = currentMessageIndex + 1
         if (nextIndex < filteredMessagesRef.current.length) {
-            scrollToMessage(nextIndex)
+            scrollToMessage(filteredMessagesRef, nextIndex)
             setCurrentMessageIndex(nextIndex)
         }
-        else scrollToMessage(currentMessageIndex)
+        else scrollToMessage(filteredMessagesRef, currentMessageIndex)
     }
 
-    const scrollToMessage = (index) => {
-        filteredMessagesRef.current[index].scrollIntoView({ behavior: 'smooth', block: 'start' })
+    const scrollToMessage = (ref, index) => {
+        ref.current[index].scrollIntoView({ /*behavior: 'smooth', */block: 'start' })
+    }
+
+    const closeSearchInput = () => {
+        filteredMessagesRef.current.forEach((message) => message.classList.remove('highlight'))
+        setSearchString('')
+        setShowSearchInput(false) 
     }
 
     return (
@@ -139,13 +150,15 @@ const Chat = ({ messages, setMessages }) => {
             <ChatHeader
                 showSearchInput={showSearchInput}
                 setShowSearchInput={setShowSearchInput}
+                closeSearchInput={closeSearchInput}
                 searchString={searchString}
                 searchMessage={searchMessage}
+                disableButtons={disableButtons}
                 showPreviousMessage={showPreviousMessage}
                 showNextMessage={showNextMessage}
             />
 
-            <ChatBody messages={messages} messagesRef={messagesRef} />
+            <ChatBody messages={messages} messagesRef={messagesRef} scrollToMessage={scrollToMessage}/>
 
             <ChatFooter 
                 toggleEmoticons={toggleEmoticons}

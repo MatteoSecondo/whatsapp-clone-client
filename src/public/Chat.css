@@ -1,7 +1,7 @@
 .chat {
     display: flex;
     flex-direction: column;
-    flex: 0.65
+    flex: 0.65;
 }
 
 .chat__header {
@@ -39,6 +39,7 @@
     background-position: center;
     padding: 30px;
     overflow: auto;
+    height: 60vh;
     /*Hide scrollbar for IE, Edge, Firefox*/
     -ms-overflow-style: none; /*IE, Edge*/
     scrollbar-width: none; /*Firefox*/
@@ -47,6 +48,25 @@
 /*Hide scrollbar for Chrome, Safari, Opera*/
 .chat__body::-webkit-scrollbar{
     display: none;
+}
+
+.chat__anchor {
+    position: relative;
+}
+
+.chat__body > .MuiButtonBase-root {
+    background-color: white;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
+
+.chat__body > .MuiButtonBase-root:hover {
+    background-color: white;
+}
+
+.chat__search {
+    width: 7rem;
 }
 
 .chat__message {
