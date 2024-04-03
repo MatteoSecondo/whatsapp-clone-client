@@ -69,8 +69,8 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
         }
     }, [searchString])
 
-    useEffect(() => {
-        if(messagesRef.current.length) {
+    useEffect(() => { 
+        if(messagesRef.current.length && !openChat.new) {
             scrollToMessage(messagesRef, openChat.messages.length -1)
             setCurrentMessageIndex(openChat.messages.length - 1)
         }
@@ -117,7 +117,6 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
         else {
             message.message = input
             const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
-            console.log(encryptedData)
             socket.emit('send-message', {message: encryptedData, chatId: chatId})
         }
         setShowEmoticons(false)
