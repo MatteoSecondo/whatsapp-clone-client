@@ -4,13 +4,15 @@ import '../public/Sidebar.css'
 import { useEffect, useRef, useState } from 'react'
 import { useAudioRecorder } from 'react-audio-voice-recorder'
 import io from 'socket.io-client'
+import CryptoJS from 'crypto-js'
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import ChatBody from './basic/ChatBody'
 import ChatHeader from './basic/ChatHeader'
 import ChatFooter from './basic/ChatFooter'
+import axios from '../axios.js'
 
-const Chat = ({ messages, setMessages }) => {
+const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser }) => {
 
     const [socket, setSocket] = useState(null)
     const [input, setInput] = useState('')
@@ -30,13 +32,17 @@ const Chat = ({ messages, setMessages }) => {
         let temp = io('localhost:9000')
 
         temp.on('new-message', (message) => {
-            setMessages([...messages, message])
+            setOpenChat((prevOpenChat) => {
+                const decryptedData = decryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
+                const updatedMessages = [...prevOpenChat.messages, decryptedData]
+                return {...prevOpenChat, messages: updatedMessages}
+            })
         })
 
         setSocket(temp)
         
         return () => {temp.disconnect(); setSocket(null)}
-    }, [messages])
+    }, [])
 
     useEffect(() => {
         if (!audioControls.recordingBlob) return
@@ -64,14 +70,33 @@ const Chat = ({ messages, setMessages }) => {
     }, [searchString])
 
     useEffect(() => {
-        if(messagesRef.current.length) scrollToMessage(messagesRef, messagesRef.current.length -1)
-        setCurrentMessageIndex(messagesRef.current.length - 1)
-    }, [messagesRef.current.length])
+        if(messagesRef.current.length) {
+            scrollToMessage(messagesRef, openChat.messages.length -1)
+            setCurrentMessageIndex(openChat.messages.length - 1)
+        }
+    }, [openChat.messages.length])
 
     const sendMessage = async (e, blob = null) => {
         e.preventDefault();
         if (input === '' && !blob) return; 
-        const message = {name: 'Demo user', timestamp: new Date(Date.now()).toUTCString(), received: true}
+
+        let chatId
+        const message = {sender: dbUser.user._id, timestamp: new Date(Date.now()).toUTCString()}
+
+        if (openChat.new) {
+            const newChat = await createNewChat(openChat.participants[0]._id)
+            setOpenChat(newChat)
+            
+            const updatedUser = {...dbUser}
+            updatedUser.user.chats.push(newChat)
+            setDbUser(updatedUser)
+
+            chatId = newChat._id
+            delete openChat.new
+        }
+        else chatId = openChat._id
+
+        setChatSearchString('')
 
         if (blob) {
             const reader = new FileReader();
@@ -79,7 +104,8 @@ const Chat = ({ messages, setMessages }) => {
             reader.onload = function (event) {
                 const base64String = event.target.result
                 message.audio = base64String
-                socket.emit('send-message', message)
+                const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
+                socket.emit('send-message', {message: encryptedData, chatId: chatId})
             };
             
             reader.onerror = function (error) {
@@ -90,7 +116,9 @@ const Chat = ({ messages, setMessages }) => {
         }
         else {
             message.message = input
-            socket.emit('send-message', message)
+            const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
+            console.log(encryptedData)
+            socket.emit('send-message', {message: encryptedData, chatId: chatId})
         }
         setShowEmoticons(false)
         setInput('')
@@ -144,6 +172,20 @@ const Chat = ({ messages, setMessages }) => {
         setShowSearchInput(false) 
     }
 
+    const createNewChat = async (participantId) => {
+        const response = await axios.get(`/chats/create/${participantId}`, {headers: {accessToken: localStorage.getItem('accessToken')}})
+        return response.data
+    }
+
+    const encryptData = (data, key) => {
+        return CryptoJS.AES.encrypt(JSON.stringify(data), key).toString();
+    }
+
+    const decryptData = (encryptedData, key) => {
+        const bytes  = CryptoJS.AES.decrypt(encryptedData, key);
+        return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    }
+
     return (
         <div className="chat">
 
@@ -156,9 +198,11 @@ const Chat = ({ messages, setMessages }) => {
                 disableButtons={disableButtons}
                 showPreviousMessage={showPreviousMessage}
                 showNextMessage={showNextMessage}
+                openChat={openChat}
+                dbUser={dbUser}
             />
 
-            <ChatBody messages={messages} messagesRef={messagesRef} scrollToMessage={scrollToMessage}/>
+            <ChatBody messages={openChat.messages} messagesRef={messagesRef} scrollToMessage={scrollToMessage} dbUser={dbUser}/>
 
             <ChatFooter 
                 toggleEmoticons={toggleEmoticons}
