@@ -1,8 +1,8 @@
 import '../public/Chat.css'
 import '../public/Sidebar.css'
-
 import { useEffect, useRef, useState } from 'react'
 import { useAudioRecorder } from 'react-audio-voice-recorder'
+import axios from '../axios.js'
 import io from 'socket.io-client'
 import CryptoJS from 'crypto-js'
 import data from '@emoji-mart/data'
@@ -10,7 +10,6 @@ import Picker from '@emoji-mart/react'
 import ChatBody from './basic/ChatBody'
 import ChatHeader from './basic/ChatHeader'
 import ChatFooter from './basic/ChatFooter'
-import axios from '../axios.js'
 
 const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser }) => {
 
@@ -53,28 +52,30 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
         if (messagesRef.current) {
             const searchResults = messagesRef.current
             searchResults.forEach(result => {
-                if (result.textContent.toLowerCase().includes(searchString) && searchString !== '') {
+                if (result && result.textContent.toLowerCase().includes(searchString) && searchString !== '') {
                     result.classList.add('highlight')
-                } else {
+                } else if (result && !result.textContent.toLowerCase().includes(searchString) && searchString !== '') {
                     result.classList.remove('highlight')
                 }
             })
             
-            if (searchResults.filter(result => result.classList.contains('highlight')).length) setDisableButtons(false)
+            if (searchResults.filter(result => result && result.classList.contains('highlight')).length) setDisableButtons(false)
             else setDisableButtons(true)
 
-            filteredMessagesRef.current = messagesRef.current.filter(ref => ref.classList.contains('highlight'))
+            filteredMessagesRef.current = messagesRef.current.filter(ref => ref && ref.classList.contains('highlight'))
             if (filteredMessagesRef.current.length) scrollToMessage(filteredMessagesRef, filteredMessagesRef.current.length - 1)
             setCurrentMessageIndex(filteredMessagesRef.current.length - 1)
         }
     }, [searchString])
 
     useEffect(() => { 
+        closeSearchInput()
+        console.log(messagesRef.current)
         if(messagesRef.current.length && !openChat.new) {
             scrollToMessage(messagesRef, openChat.messages.length -1)
             setCurrentMessageIndex(openChat.messages.length - 1)
         }
-    }, [openChat.messages.length])
+    }, [openChat])
 
     const sendMessage = async (e, blob = null) => {
         e.preventDefault();
@@ -84,6 +85,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
         const message = {sender: dbUser.user._id, timestamp: new Date(Date.now()).toUTCString()}
 
         if (openChat.new) {
+            messagesRef.current = []
             const newChat = await createNewChat(openChat.participants[0]._id)
             setOpenChat(newChat)
             
@@ -92,7 +94,6 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
             setDbUser(updatedUser)
 
             chatId = newChat._id
-            delete openChat.new
         }
         else chatId = openChat._id
 
@@ -162,7 +163,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
     }
 
     const scrollToMessage = (ref, index) => {
-        ref.current[index].scrollIntoView({ /*behavior: 'smooth', */block: 'start' })
+        ref.current[index].scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
 
     const closeSearchInput = () => {
@@ -201,7 +202,12 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
                 dbUser={dbUser}
             />
 
-            <ChatBody messages={openChat.messages} messagesRef={messagesRef} scrollToMessage={scrollToMessage} dbUser={dbUser}/>
+            <ChatBody
+                messages={openChat.messages}
+                messagesRef={messagesRef}
+                scrollToMessage={scrollToMessage}
+                dbUser={dbUser}
+            />
 
             <ChatFooter 
                 toggleEmoticons={toggleEmoticons}
@@ -214,10 +220,14 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
             />
 
             {showEmoticons &&
-            <Picker
-                data={data}
-                onEmojiSelect={(emoticon) => setInput(input + emoticon.native)}
-            />}
+                <div style={{position: 'absolute', bottom: '5.5rem'}}>
+                    <Picker
+                        data={data}
+                        onEmojiSelect={(emoticon) => setInput(input + emoticon.native)}
+                        previewPosition='none'
+                    />
+                </div>
+            }
 
         </div>
     )

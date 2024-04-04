@@ -7,7 +7,7 @@ const ChatBody = ({ messages, messagesRef, scrollToMessage, dbUser }) => {
     const [showReturnToLastMessage, setShowReturnToLastMessage] = useState(false)
     const ref = useRef()
 
-    const checkIfShowReturnToLastMessage = (e) => {
+    const checkIfShowReturnToLastMessage = () => {
         const scrolledHeight = ref.current.scrollHeight - ref.current.scrollTop <= ref.current.clientHeight + 200
         if (scrolledHeight) setShowReturnToLastMessage(false)
         else setShowReturnToLastMessage(true)
@@ -15,7 +15,7 @@ const ChatBody = ({ messages, messagesRef, scrollToMessage, dbUser }) => {
 
     return (
         <div className="chat__anchor">
-            <div className="chat__body" onWheel={(e) => checkIfShowReturnToLastMessage(e)} ref={ref}>
+            <div className="chat__body" onWheel={checkIfShowReturnToLastMessage} ref={ref}>
                     {messages && messages.map((message, index) =>
                         (
                             <p key={message._id || Math.floor(Math.random() * 1000) + 1}

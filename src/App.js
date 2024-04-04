@@ -1,9 +1,9 @@
 import './App.css'
-import Sidebar from './components/Sidebar.js'
-import Chat from './components/Chat.js'
 import { useEffect, useState } from 'react'
 import axios from './axios.js'
 import { useGoogleLogin, googleLogout } from '@react-oauth/google'
+import Sidebar from './components/Sidebar.js'
+import Chat from './components/Chat.js'
 import Blank from './components/Blank.js'
 
 function App() {
@@ -12,6 +12,7 @@ function App() {
   const [ dbUser, setDbUser ] = useState(null)
   const [openChat, setOpenChat] = useState(null)
   const [searchString, setSearchString] = useState('')
+  const [openDrawer, setOpenDrawer] = useState(false)
 
   useEffect(() => {
     async function checkAuth() {
@@ -51,7 +52,7 @@ function App() {
         })
         .catch((err) => console.log(err))
       }
-    }, [user])
+  }, [user])
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => setUser(codeResponse),
@@ -65,13 +66,34 @@ function App() {
     localStorage.removeItem('accessToken')
   }
 
+  const toggleDrawer = (boolean) => () => {
+    setOpenDrawer(boolean);
+}
+
   return (
     <div className="app">
       <div className="app__body">
-        <Sidebar login={login} logOut={logOut} dbUser={dbUser} setOpenChat={setOpenChat} searchString={searchString} setSearchString={setSearchString} openChat={openChat} />
+        <Sidebar
+          login={login}
+          logOut={logOut}
+          dbUser={dbUser}
+          setDbUser={setDbUser}
+          setOpenChat={setOpenChat}
+          searchString={searchString} 
+          setSearchString={setSearchString}
+          openChat={openChat}
+          toggleDrawer={toggleDrawer}
+          openDrawer={openDrawer}
+        />
         {openChat ?
-          <Chat openChat={openChat} setOpenChat={setOpenChat} setChatSearchString={setSearchString} setDbUser={setDbUser} dbUser={dbUser} /> :
-          <Blank />
+          <Chat
+            openChat={openChat}
+            setOpenChat={setOpenChat}
+            setChatSearchString={setSearchString}
+            setDbUser={setDbUser}
+            dbUser={dbUser}
+          /> :
+          <Blank dbUser={dbUser} toggleDrawer={toggleDrawer} />
         }
           
       </div>
