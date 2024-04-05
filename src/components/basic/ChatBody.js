@@ -19,7 +19,7 @@ const ChatBody = ({ messages, messagesRef, scrollToMessage, dbUser }) => {
                     {messages && messages.map((message, index) =>
                         (
                             <p key={message._id || Math.floor(Math.random() * 1000) + 1}
-                                className={`chat__message ${message.sender._id === dbUser.user._id && 'chat__receiver'}`}
+                                className={`chat__message ${message.sender._id === dbUser._id && 'chat__receiver'}`}
                             >
                                 <span className="chat__name">{message.sender.name}</span>
 
@@ -28,7 +28,7 @@ const ChatBody = ({ messages, messagesRef, scrollToMessage, dbUser }) => {
                                     className='chat__messageText'
                                     ref={el => messagesRef.current[index] = el}
                                 >
-                                    {message.message}
+                                    {message.text}
                                 </span> : 
                                 <audio src={message.audio} controls ref={el => messagesRef.current[index] = el}></audio>}
 

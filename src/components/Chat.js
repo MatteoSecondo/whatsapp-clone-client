@@ -13,8 +13,8 @@ import ChatFooter from './basic/ChatFooter'
 
 const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser }) => {
 
-    const [socket, setSocket] = useState(null)
     const [input, setInput] = useState('')
+    const [socket, setSocket] = useState(null)
     const [recordingColor, setRecordingColor] = useState('gray')
     const [showEmoticons, setShowEmoticons] = useState(false)
 
@@ -28,19 +28,19 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
     const audioControls = useAudioRecorder()
 
     useEffect(() => {
-        let temp = io('localhost:9000')
+        let tempSocket = io('localhost:9000')
 
-        temp.on('new-message', (message) => {
+        /*temp.on('new-message', (message) => {
             setOpenChat((prevOpenChat) => {
                 const decryptedData = decryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
                 const updatedMessages = [...prevOpenChat.messages, decryptedData]
                 return {...prevOpenChat, messages: updatedMessages}
             })
-        })
+        })*/
 
-        setSocket(temp)
+        setSocket(tempSocket)
         
-        return () => {temp.disconnect(); setSocket(null)}
+        return () => {tempSocket.disconnect(); setSocket(null)}
     }, [])
 
     useEffect(() => {
@@ -70,7 +70,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
 
     useEffect(() => { 
         closeSearchInput()
-        console.log(messagesRef.current)
+        
         if(messagesRef.current.length && !openChat.new) {
             scrollToMessage(messagesRef, openChat.messages.length -1)
             setCurrentMessageIndex(openChat.messages.length - 1)
@@ -82,7 +82,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
         if (input === '' && !blob) return; 
 
         let chatId
-        const message = {sender: dbUser.user._id, timestamp: new Date(Date.now()).toUTCString()}
+        const message = {sender: dbUser._id, timestamp: new Date(Date.now()).toUTCString()}
 
         if (openChat.new) {
             messagesRef.current = []
@@ -90,7 +90,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
             setOpenChat(newChat)
             
             const updatedUser = {...dbUser}
-            updatedUser.user.chats.push(newChat)
+            updatedUser.chats.push(newChat)
             setDbUser(updatedUser)
 
             chatId = newChat._id
@@ -105,8 +105,8 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
             reader.onload = function (event) {
                 const base64String = event.target.result
                 message.audio = base64String
-                const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
-                socket.emit('send-message', {message: encryptedData, chatId: chatId})
+                //const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
+                socket.emit('client-server', { chatId: chatId, message: message });
             };
             
             reader.onerror = function (error) {
@@ -116,9 +116,9 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
             reader.readAsDataURL(blob);
         }
         else {
-            message.message = input
-            const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
-            socket.emit('send-message', {message: encryptedData, chatId: chatId})
+            message.text = input
+            //const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
+            socket.emit('client-server', { chatId: chatId, message: message })
         }
         setShowEmoticons(false)
         setInput('')

@@ -10,9 +10,9 @@ import CloseIcon from '@mui/icons-material/Close';
 const ChatHeader = ({ showSearchInput, setShowSearchInput, closeSearchInput, searchString, searchMessage, disableButtons, showPreviousMessage, showNextMessage, openChat, dbUser }) => {
     return (
         <div className="chat__header">
-                <Avatar src={openChat.participants[0]._id !== dbUser.user._id ? openChat.participants[0].picture : openChat.participants[1].picture} />
+                <Avatar src={openChat.participants[0]._id !== dbUser._id ? openChat.participants[0].picture : openChat.participants[1].picture} />
                 <div className="chat__headerInfo">
-                    <h3>{openChat.participants[0]._id !== dbUser.user._id ? openChat.participants[0].name : openChat.participants[1].name}</h3>
+                    <h3>{openChat.participants[0]._id !== dbUser._id ? openChat.participants[0].name : openChat.participants[1].name}</h3>
                     <p>Last seen at ...</p>
                 </div>
 

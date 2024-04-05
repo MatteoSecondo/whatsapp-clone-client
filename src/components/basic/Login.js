@@ -6,10 +6,10 @@ const Login = ({ login, logOut, dbUser}) => {
             <br />
             {dbUser ? (
                 <div>
-                    <img src={dbUser.user.picture} alt="user" />
+                    <img src={dbUser.picture} alt="user" />
                     <h3>User Logged in</h3>
-                    <p>Name: {dbUser.user.name}</p>
-                    <p>Email Address: {dbUser.user.email}</p>
+                    <p>Name: {dbUser.name}</p>
+                    <p>Email Address: {dbUser.email}</p>
                     <br />
                     <br />
                     <button onClick={logOut}>Log out</button>

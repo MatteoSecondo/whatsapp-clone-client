@@ -2,9 +2,11 @@ import './App.css'
 import { useEffect, useState } from 'react'
 import axios from './axios.js'
 import { useGoogleLogin, googleLogout } from '@react-oauth/google'
+import { Drawer } from '@mui/material'
 import Sidebar from './components/Sidebar.js'
 import Chat from './components/Chat.js'
 import Blank from './components/Blank.js'
+import Login from './components/basic/Login.js';
 
 function App() {
 
@@ -73,9 +75,8 @@ function App() {
   return (
     <div className="app">
       <div className="app__body">
+
         <Sidebar
-          login={login}
-          logOut={logOut}
           dbUser={dbUser}
           setDbUser={setDbUser}
           setOpenChat={setOpenChat}
@@ -83,8 +84,8 @@ function App() {
           setSearchString={setSearchString}
           openChat={openChat}
           toggleDrawer={toggleDrawer}
-          openDrawer={openDrawer}
         />
+
         {openChat ?
           <Chat
             openChat={openChat}
@@ -95,6 +96,10 @@ function App() {
           /> :
           <Blank dbUser={dbUser} toggleDrawer={toggleDrawer} />
         }
+
+        <Drawer open={openDrawer} onClose={toggleDrawer(false)}>
+          <Login login={login} logOut={logOut} dbUser={dbUser} />
+        </Drawer>
           
       </div>
     </div>

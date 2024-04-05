@@ -6,7 +6,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert'
 const SidebarHeader = ({ dbUser, toggleDrawer }) => {
     return (
         <div className="sidebar__header">
-            <Avatar src={dbUser && dbUser.user.picture} alt="user" />
+            <Avatar src={dbUser && dbUser.picture} alt="user" />
             <div className="sidebar__headerRight">
 
                 <IconButton>
