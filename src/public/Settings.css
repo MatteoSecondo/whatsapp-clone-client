@@ -1,0 +1,49 @@
+.settings__tab {
+    display: flex;
+}
+
+.settings__tab > div {
+    width: 30vw;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.settings__div {
+    text-align: center;
+}
+
+.settings__div > h2 {
+    padding: 20px;
+}
+
+.settings__option {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    cursor: pointer;
+}
+
+.settings__option > p {
+    margin-left: 10px;
+}
+
+.settings__header .MuiSvgIcon-root {
+    display: inline;
+    margin: 0 10px 5px;
+}
+
+.settings__header > h2 {
+    margin-right: 10px;
+    margin-bottom: 20px;
+}
+
+@media screen and (max-width: 840px) {
+
+    .settings__header {
+        margin: 20px 0 20px -1.7rem;
+    }
+
+    .settings__header > h2 {
+        display: inline;
+    }
+}

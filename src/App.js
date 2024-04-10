@@ -6,23 +6,34 @@ import { Drawer } from '@mui/material'
 import Sidebar from './components/Sidebar.js'
 import Chat from './components/Chat.js'
 import Blank from './components/Blank.js'
-import Login from './components/basic/Login.js';
+import Settings from './components/Settings.js'
 
 function App() {
 
-  const [ user, setUser ] = useState(null)
-  const [ dbUser, setDbUser ] = useState(null)
+  const [googleUser, setGoogleUser] = useState(null)
+  const [currentUser, setCurrentUser] = useState(null)
   const [openChat, setOpenChat] = useState(null)
   const [searchString, setSearchString] = useState('')
   const [openDrawer, setOpenDrawer] = useState(false)
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 840)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 840)
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     async function checkAuth() {
       const response = await axios.get('/users/auth', {headers: {accessToken: localStorage.getItem('accessToken')}});
       if (response.data.error) console.log(response.data.error)
       else {
-        const fullDbUser = await axios.get('/users/populate', {headers: {accessToken: localStorage.getItem('accessToken')}})
-        setDbUser(fullDbUser.data)
+        const fullCurrentUser = await axios.get('/users/populate', {headers: {accessToken: localStorage.getItem('accessToken')}})
+        setCurrentUser(fullCurrentUser.data)
       }
     }
 
@@ -38,14 +49,14 @@ function App() {
         picture: userData.picture
       })
       localStorage.setItem('accessToken', response.data.token)
-      const fullDbUser = await axios.get('/users/populate', {headers: {accessToken: localStorage.getItem('accessToken')}})
-      setDbUser(fullDbUser.data)
+      const fullCurrentUser = await axios.get('/users/populate', {headers: {accessToken: localStorage.getItem('accessToken')}})
+      setCurrentUser(fullCurrentUser.data)
       }
 
-      if (user) {
-        axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+      if (googleUser) {
+        axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleUser.access_token}`, {
           headers: {
-            Authorization: `Bearer ${user.access_token}`,
+            Authorization: `Bearer ${googleUser.access_token}`,
             Accept: 'application/json'
           }
         })
@@ -54,51 +65,60 @@ function App() {
         })
         .catch((err) => console.log(err))
       }
-  }, [user])
+  }, [googleUser])
 
   const login = useGoogleLogin({
-    onSuccess: (codeResponse) => setUser(codeResponse),
+    onSuccess: (codeResponse) => setGoogleUser(codeResponse),
     onError: (error) => alert('Login Failed:', error)
   })
 
   const logOut = () => {
     googleLogout()
-    setUser(null)
-    setDbUser(null)
+    setGoogleUser(null)
+    setCurrentUser(null)
     localStorage.removeItem('accessToken')
   }
 
   const toggleDrawer = (boolean) => () => {
     setOpenDrawer(boolean);
-}
+  }
 
   return (
     <div className="app">
       <div className="app__body">
 
         <Sidebar
-          dbUser={dbUser}
-          setDbUser={setDbUser}
+          currentUser={currentUser}
+          setCurrentUser={setCurrentUser}
+          openChat={openChat}
           setOpenChat={setOpenChat}
           searchString={searchString} 
           setSearchString={setSearchString}
-          openChat={openChat}
           toggleDrawer={toggleDrawer}
+          isSmallScreen={isSmallScreen}
         />
 
-        {openChat ?
+        {openChat && currentUser ?
           <Chat
             openChat={openChat}
             setOpenChat={setOpenChat}
             setChatSearchString={setSearchString}
-            setDbUser={setDbUser}
-            dbUser={dbUser}
+            setCurrentUser={setCurrentUser}
+            currentUser={currentUser}
+            isSmallScreen={isSmallScreen}
           /> :
-          <Blank dbUser={dbUser} toggleDrawer={toggleDrawer} />
+          <Blank currentUser={currentUser} toggleDrawer={toggleDrawer} />
         }
 
-        <Drawer open={openDrawer} onClose={toggleDrawer(false)}>
-          <Login login={login} logOut={logOut} dbUser={dbUser} />
+        <Drawer
+          open={openDrawer}
+          onClose={toggleDrawer(false)}
+          PaperProps={{ sx: {height: isSmallScreen ? 'unset' : '60%',
+                            top: isSmallScreen ? '80px' : 'unset',
+                            bottom: isSmallScreen ? '80px' : '10px',
+                            left: isSmallScreen ? '10%' : '10px',
+                            right: isSmallScreen ? '10%' : 'unset'} }}>
+          <Settings login={login} logOut={logOut} currentUser={currentUser} isSmallScreen={isSmallScreen} />
         </Drawer>
           
       </div>

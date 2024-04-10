@@ -3,10 +3,10 @@ import ChatIcon from '@mui/icons-material/Chat'
 import DonutLargeIcon from '@mui/icons-material/DonutLarge'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 
-const SidebarHeader = ({ dbUser, toggleDrawer }) => {
+const SidebarHeader = ({ currentUser, toggleDrawer }) => {
     return (
         <div className="sidebar__header">
-            <Avatar src={dbUser && dbUser.picture} alt="user" />
+            <Avatar src={currentUser && currentUser.picture} alt="user" />
             <div className="sidebar__headerRight">
 
                 <IconButton>

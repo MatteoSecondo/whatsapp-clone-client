@@ -1,17 +1,17 @@
 import SidebarChat from './SidebarChat.js'
 
-const SidebarChats = ({ dbUser, setDbUser, searchString, openChat, setOpenChat, searchChats, searchNewChats }) => {
+const SidebarChats = ({ currentUser, setCurrentUser, searchString, openChat, setOpenChat, searchChats, searchNewChats }) => {
     return (
-        <div className="sidebar__chats">
+        <div className="sidebarChats">
 
-            {searchString === '' && dbUser &&
-                dbUser.chats.map(chat => (
+            {searchString === '' && currentUser &&
+                currentUser.chats.map(chat => (
                     <SidebarChat
                         key={chat._id}
                         chat={chat}
                         setOpenChat={setOpenChat}
-                        dbUser={dbUser}
-                        setDbUser={setDbUser}
+                        currentUser={currentUser}
+                        setCurrentUser={setCurrentUser}
                         openChat={openChat}
                     />
                 ))
@@ -19,27 +19,27 @@ const SidebarChats = ({ dbUser, setDbUser, searchString, openChat, setOpenChat, 
 
             {searchString !== '' &&
                 <>
-                    {searchChats.length > 0 && <h2 style={{textAlign: 'center', margin: '1rem 0'}}>Select a chat</h2>}
+                    {searchChats.length > 0 && <h2>Select a chat</h2>}
                     {searchChats.map(chat => (
                         <SidebarChat
                             key={chat._id}
                             chat={chat}
                             setOpenChat={setOpenChat}
-                            dbUser={dbUser}
-                            setDbUser={setDbUser}
+                            currentUser={currentUser}
+                            setCurrentUser={setCurrentUser}
                             openChat={openChat}
                         />
                     ))}
-                    {searchNewChats.length > 0 && <h2 style={{textAlign: 'center', margin: '1rem 0'}}>Start a new chat</h2>}
+                    {searchNewChats.length > 0 && <h2>Start a new chat</h2>}
                     {searchNewChats.map(chat => (
                         <SidebarChat
                             key={chat._id || Math.floor(Math.random() * 1000) + 1}
                             chat={chat} 
                             setOpenChat={setOpenChat}
                             isNewChat={true} 
-                            dbUser={dbUser}
-                            setDbUser={setDbUser}
-                            openChat={openChat} 
+                            currentUser={currentUser}
+                            setCurrentUser={setCurrentUser}
+                            openChat={openChat}
                         />
                     ))}
                 </>

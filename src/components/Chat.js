@@ -1,5 +1,4 @@
 import '../public/Chat.css'
-import '../public/Sidebar.css'
 import { useEffect, useRef, useState } from 'react'
 import { useAudioRecorder } from 'react-audio-voice-recorder'
 import axios from '../axios.js'
@@ -11,7 +10,7 @@ import ChatBody from './basic/ChatBody'
 import ChatHeader from './basic/ChatHeader'
 import ChatFooter from './basic/ChatFooter'
 
-const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser }) => {
+const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, currentUser, isSmallScreen }) => {
 
     const [input, setInput] = useState('')
     const [socket, setSocket] = useState(null)
@@ -25,19 +24,13 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
     const messagesRef = useRef([])
     const filteredMessagesRef = useRef([])
 
+    const anchorRef = useRef()
+    const footerRef = useRef()
+
     const audioControls = useAudioRecorder()
 
     useEffect(() => {
         let tempSocket = io('localhost:9000')
-
-        /*temp.on('new-message', (message) => {
-            setOpenChat((prevOpenChat) => {
-                const decryptedData = decryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
-                const updatedMessages = [...prevOpenChat.messages, decryptedData]
-                return {...prevOpenChat, messages: updatedMessages}
-            })
-        })*/
-
         setSocket(tempSocket)
         
         return () => {tempSocket.disconnect(); setSocket(null)}
@@ -54,7 +47,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
             searchResults.forEach(result => {
                 if (result && result.textContent.toLowerCase().includes(searchString) && searchString !== '') {
                     result.classList.add('highlight')
-                } else if (result && !result.textContent.toLowerCase().includes(searchString) && searchString !== '') {
+                } else if (result && !result.textContent.toLowerCase().includes(searchString) && searchString !== '' || searchString === '') {
                     result.classList.remove('highlight')
                 }
             })
@@ -79,19 +72,22 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
 
     const sendMessage = async (e, blob = null) => {
         e.preventDefault();
-        if (input === '' && !blob) return; 
+        if ((input === '' || /^[\s\n\t]*$/.test(input)) && !blob) return; 
 
+        let tempInput = input.trim()
+        tempInput = tempInput.replace(/^\s+|\s+$/g, '')
+    
         let chatId
-        const message = {sender: dbUser._id, timestamp: new Date(Date.now()).toUTCString()}
+        const message = {sender: currentUser._id, timestamp: new Date(Date.now()).toUTCString()}
 
         if (openChat.new) {
             messagesRef.current = []
             const newChat = await createNewChat(openChat.participants[0]._id)
             setOpenChat(newChat)
             
-            const updatedUser = {...dbUser}
+            const updatedUser = {...currentUser}
             updatedUser.chats.push(newChat)
-            setDbUser(updatedUser)
+            setCurrentUser(updatedUser)
 
             chatId = newChat._id
         }
@@ -105,23 +101,24 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
             reader.onload = function (event) {
                 const base64String = event.target.result
                 message.audio = base64String
-                //const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
-                socket.emit('client-server', { chatId: chatId, message: message });
+                const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
+                socket.emit('client-server', { chatId: chatId, message: encryptedData });
             };
             
             reader.onerror = function (error) {
-                console.log(error);
+                console.log(error)
             };
             
-            reader.readAsDataURL(blob);
+            reader.readAsDataURL(blob)
         }
         else {
-            message.text = input
-            //const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
-            socket.emit('client-server', { chatId: chatId, message: message })
+            message.text = tempInput
+            const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
+            socket.emit('client-server', { chatId: chatId, message: encryptedData })
         }
         setShowEmoticons(false)
         setInput('')
+        anchorRef.current.style.height = 'calc(100% - 40px - 62px - 3rem)'
     }
 
     const recordMessage = () => {
@@ -181,13 +178,16 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
         return CryptoJS.AES.encrypt(JSON.stringify(data), key).toString();
     }
 
-    const decryptData = (encryptedData, key) => {
-        const bytes  = CryptoJS.AES.decrypt(encryptedData, key);
-        return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    const handleKeyDown = (event) => {
+        if (event.key === 'Escape') setOpenChat(null)
+    }
+
+    function updateHeight() {
+        anchorRef.current.style.height = 'calc(100% - 62px - 3rem - ' + footerRef.current.clientHeight + 'px)'
     }
 
     return (
-        <div className="chat">
+        <div className="chat" style={{display: isSmallScreen ? (openChat ? 'flex' : 'none') : 'flex'}} onKeyDown={handleKeyDown} tabIndex={0}>
 
             <ChatHeader
                 showSearchInput={showSearchInput}
@@ -199,14 +199,17 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
                 showPreviousMessage={showPreviousMessage}
                 showNextMessage={showNextMessage}
                 openChat={openChat}
-                dbUser={dbUser}
+                setOpenChat={setOpenChat}
+                currentUser={currentUser}
+                isSmallScreen={isSmallScreen}
             />
 
             <ChatBody
                 messages={openChat.messages}
                 messagesRef={messagesRef}
                 scrollToMessage={scrollToMessage}
-                dbUser={dbUser}
+                currentUser={currentUser}
+                anchorRef={anchorRef}
             />
 
             <ChatFooter 
@@ -217,10 +220,12 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setDbUser, dbUser })
                 sendMessage={sendMessage}
                 recordMessage={recordMessage}
                 recordingColor={recordingColor}
+                footerRef={footerRef}
+                updateHeight={updateHeight}
             />
 
             {showEmoticons &&
-                <div style={{position: 'absolute', bottom: '5.5rem'}}>
+                <div className='chat__picker'>
                     <Picker
                         data={data}
                         onEmojiSelect={(emoticon) => setInput(input + emoticon.native)}

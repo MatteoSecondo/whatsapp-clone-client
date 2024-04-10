@@ -1,9 +1,9 @@
-import '../../public/SidebarChat.css'
 import { useEffect, useState } from 'react'
 import { Avatar } from '@mui/material'
 import io from 'socket.io-client'
+import CryptoJS from 'crypto-js'
 
-const SidebarChat = ({ chat, setOpenChat, isNewChat, dbUser, setDbUser, openChat }) => {
+const SidebarChat = ({ chat, setOpenChat, isNewChat, currentUser, setCurrentUser, openChat }) => {
 
     const [ch, setCh] = useState(chat)
 
@@ -13,14 +13,15 @@ const SidebarChat = ({ chat, setOpenChat, isNewChat, dbUser, setDbUser, openChat
         socket.emit('join', chat._id)
 
         socket.on('server-client', (message) => {
-            setCh((prevCh) => {return {...prevCh, messages: [...prevCh.messages, message]}})
+            const decryptedData = decryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
+            setCh((prevCh) => {return {...prevCh, messages: [...prevCh.messages, decryptedData]}})
         })
 
         return () => socket.disconnect()
     }, [])
 
     useEffect(() => {
-            const updatedChats = [...dbUser.chats]
+            const updatedChats = [...currentUser.chats]
             const existingChatIndex = updatedChats.findIndex(c => c._id === ch._id)
 
             if (existingChatIndex !== -1) {
@@ -30,9 +31,9 @@ const SidebarChat = ({ chat, setOpenChat, isNewChat, dbUser, setDbUser, openChat
                 if (ch._id > 1000) updatedChats.push(ch)
             }
 
-            const updatedDbUser = {...dbUser, chats: updatedChats}
+            const updatedCurrentUser = {...currentUser, chats: updatedChats}
 
-            setDbUser(updatedDbUser)
+            setCurrentUser(updatedCurrentUser)
 
             if (openChat) {
                 setOpenChat((prevOpenChat) => {
@@ -41,41 +42,22 @@ const SidebarChat = ({ chat, setOpenChat, isNewChat, dbUser, setDbUser, openChat
             }
     }, [ch])
 
-    /*useEffect(() => {
-        if (openChat && openChat._id === chat._id) {
-    
-            const updatedChats = [...dbUser.user.chats]
-            const existingChatIndex = updatedChats.findIndex(c => c._id === openChat._id)
-
-            if (existingChatIndex !== -1) {
-                updatedChats[existingChatIndex] = openChat
-            } 
-            else {
-                if (openChat._id > 1000) updatedChats.push(openChat)
-            }
-
-            const updatedDbUser = {
-            ...dbUser,
-            user: {
-                ...dbUser.user,
-                chats: updatedChats
-            }}
-
-            setDbUser(updatedDbUser)
-        }
-    }, [openChat])*/
-
     const setNewChat = () => {
         chat.new = true
-        setOpenChat(chat)
+        setOpenChat(ch)
+    }
+
+    const decryptData = (encryptedData, key) => {
+        const bytes  = CryptoJS.AES.decrypt(encryptedData, key);
+        return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
     }
 
     return (
-        <div className="sidebarChat" onClick={() => {isNewChat ? setNewChat() : setOpenChat(chat)}}>
-            <Avatar src={ch.participants[0]._id !== dbUser._id ? ch.participants[0].picture : ch.participants[1].picture} />
+        <div className="sidebarChat" onClick={() => isNewChat ? setNewChat() : setOpenChat(ch)}>
+            <Avatar src={ch.participants[0]._id !== currentUser._id ? ch.participants[0].picture : ch.participants[1].picture} />
 
             <div className="sidebarChat__info">
-                <h2>{ch.participants[0]._id !== dbUser._id ? ch.participants[0].name : ch.participants[1].name}</h2>
+                <h2>{ch.participants[0]._id !== currentUser._id ? ch.participants[0].name : ch.participants[1].name}</h2>
                 {ch.messages.length ? (<p>{ch.messages[ch.messages.length - 1].text || 'Audio'}</p>) : <p>Type a message</p>}
             </div>
         </div>

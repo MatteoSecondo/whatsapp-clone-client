@@ -4,6 +4,7 @@
     flex: 0.35;
     border-right: 1px solid lightgray;
     background-color: white;
+    max-width: 35%;
 }
 
 .sidebar__header {
@@ -65,4 +66,12 @@
 /*Hide scrollbar for Chrome, Safari, Opera*/
 .sidebar__chats::-webkit-scrollbar{
     display: none;
+}
+
+
+@media screen and (max-width: 840px) {
+    .sidebar {
+        max-width: 100%;
+        flex: 1;
+    }
 }

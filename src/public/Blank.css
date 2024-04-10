@@ -6,3 +6,10 @@
     flex: 0.65;
     background-color: white;
 }
+
+
+@media screen and (max-width: 840px) {
+    .blank {
+        display: none;
+    }
+}
