@@ -1,12 +1,12 @@
 import '../public/Blank.css'
-import { Link } from '@mui/material'
+import { Link, Box } from '@mui/material'
 
 const Blank = ({ currentUser, toggleDrawer }) => {
     return (
-        <div className="blank">
+        <Box className="blank" sx={{backgroundColor: 'background.paper'}}>
             <h1>Whatsapp Clone</h1>
             {currentUser ? <p>Click a chat to start</p> : <Link href="#" onClick={toggleDrawer(true)}>Login to start</Link>}
-        </div>
+        </Box>
     )
 }
  

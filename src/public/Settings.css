@@ -12,8 +12,15 @@
     text-align: center;
 }
 
-.settings__div > h2 {
-    padding: 20px;
+.settings__title {
+    position: relative;
+    margin-top: 20px;
+}
+
+.settings__title > .MuiButtonBase-root {
+    position: absolute;
+    top: 0;
+    right: 5%;
 }
 
 .settings__option {

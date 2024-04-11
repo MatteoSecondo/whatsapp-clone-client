@@ -10,11 +10,11 @@ import ChatBody from './basic/ChatBody'
 import ChatHeader from './basic/ChatHeader'
 import ChatFooter from './basic/ChatFooter'
 
-const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, currentUser, isSmallScreen }) => {
+const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, currentUser, isSmallScreen, theme, sidebarSearchString }) => {
 
     const [input, setInput] = useState('')
     const [socket, setSocket] = useState(null)
-    const [recordingColor, setRecordingColor] = useState('gray')
+    const [recordingColor, setRecordingColor] = useState(null)
     const [showEmoticons, setShowEmoticons] = useState(false)
 
     const [searchString, setSearchString] = useState('')
@@ -64,15 +64,18 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
     useEffect(() => { 
         closeSearchInput()
         
-        if(messagesRef.current.length && !openChat.new) {
+        if(messagesRef.current.length && !openChat.new && !openChat.new) {
             scrollToMessage(messagesRef, openChat.messages.length -1)
             setCurrentMessageIndex(openChat.messages.length - 1)
         }
     }, [openChat])
 
     const sendMessage = async (e, blob = null) => {
-        e.preventDefault();
-        if ((input === '' || /^[\s\n\t]*$/.test(input)) && !blob) return; 
+        e.preventDefault()
+        setInput('')
+        setShowEmoticons(false)
+
+        if ((input === '' || /^[\s\n\t]*$/.test(input)) && !blob) return
 
         let tempInput = input.trim()
         tempInput = tempInput.replace(/^\s+|\s+$/g, '')
@@ -116,15 +119,14 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
             const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
             socket.emit('client-server', { chatId: chatId, message: encryptedData })
         }
-        setShowEmoticons(false)
-        setInput('')
+
         anchorRef.current.style.height = 'calc(100% - 40px - 62px - 3rem)'
     }
 
     const recordMessage = () => {
         if (audioControls.isRecording) {
             audioControls.stopRecording()
-            setRecordingColor('gray')
+            setRecordingColor(null)
         }
         else {
             audioControls.startRecording()
@@ -230,6 +232,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
                         data={data}
                         onEmojiSelect={(emoticon) => setInput(input + emoticon.native)}
                         previewPosition='none'
+                        theme={theme ? 'dark' : 'light'}
                     />
                 </div>
             }

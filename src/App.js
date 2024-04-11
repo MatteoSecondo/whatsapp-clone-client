@@ -2,7 +2,8 @@ import './App.css'
 import { useEffect, useState } from 'react'
 import axios from './axios.js'
 import { useGoogleLogin, googleLogout } from '@react-oauth/google'
-import { Drawer } from '@mui/material'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { Drawer, Box } from '@mui/material'
 import Sidebar from './components/Sidebar.js'
 import Chat from './components/Chat.js'
 import Blank from './components/Blank.js'
@@ -16,6 +17,7 @@ function App() {
   const [searchString, setSearchString] = useState('')
   const [openDrawer, setOpenDrawer] = useState(false)
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 840)
+  const [theme, setTheme] = useState(localStorage.getItem('theme') === 'true' ? true : false)
 
   useEffect(() => {
     const handleResize = () => {
@@ -83,46 +85,82 @@ function App() {
     setOpenDrawer(boolean);
   }
 
+  const lightTheme = createTheme({
+    palette: {
+      mode: 'light',
+      background: {
+        default: '#dadbd3',
+        paper: 'white',
+        hover: '#e6e6e6',
+        received: '#ffffff',
+        sended: '#dcf8c6',
+      },
+      border: {
+        main: 'lightgray',
+      }
+    },
+  })
+
+  const darkTheme = createTheme({
+    palette: {
+      mode: 'dark',
+      background: {
+        default: '#222222',
+        paper: '#2d2d2d',
+        hover: '#262626',
+        received: '#2d2d2d',
+        sended: '#1D604E',
+      },
+      border: {
+        main: 'black',
+      }
+    },
+  })
+
   return (
-    <div className="app">
-      <div className="app__body">
+    <ThemeProvider theme={theme ? darkTheme : lightTheme}>
+      <Box className="app" sx={{backgroundColor: 'background.default', color: 'text.primary'}}>
+        <Box className="app__body" sx={{backgroundColor: 'background.paper', color: 'text.primary'}}>
 
-        <Sidebar
-          currentUser={currentUser}
-          setCurrentUser={setCurrentUser}
-          openChat={openChat}
-          setOpenChat={setOpenChat}
-          searchString={searchString} 
-          setSearchString={setSearchString}
-          toggleDrawer={toggleDrawer}
-          isSmallScreen={isSmallScreen}
-        />
-
-        {openChat && currentUser ?
-          <Chat
+          <Sidebar
+            currentUser={currentUser}
+            setCurrentUser={setCurrentUser}
             openChat={openChat}
             setOpenChat={setOpenChat}
-            setChatSearchString={setSearchString}
-            setCurrentUser={setCurrentUser}
-            currentUser={currentUser}
+            searchString={searchString} 
+            setSearchString={setSearchString}
+            toggleDrawer={toggleDrawer}
             isSmallScreen={isSmallScreen}
-          /> :
-          <Blank currentUser={currentUser} toggleDrawer={toggleDrawer} />
-        }
+          />
 
-        <Drawer
-          open={openDrawer}
-          onClose={toggleDrawer(false)}
-          PaperProps={{ sx: {height: isSmallScreen ? 'unset' : '60%',
-                            top: isSmallScreen ? '80px' : 'unset',
-                            bottom: isSmallScreen ? '80px' : '10px',
-                            left: isSmallScreen ? '10%' : '10px',
-                            right: isSmallScreen ? '10%' : 'unset'} }}>
-          <Settings login={login} logOut={logOut} currentUser={currentUser} isSmallScreen={isSmallScreen} />
-        </Drawer>
-          
-      </div>
-    </div>
+          {openChat && currentUser ?
+            <Chat
+              openChat={openChat}
+              setOpenChat={setOpenChat}
+              setChatSearchString={setSearchString}
+              setCurrentUser={setCurrentUser}
+              currentUser={currentUser}
+              isSmallScreen={isSmallScreen}
+              theme={theme}
+              sidebarSearchString={searchString}
+            /> :
+            <Blank currentUser={currentUser} toggleDrawer={toggleDrawer} />
+          }
+
+          <Drawer
+            open={openDrawer}
+            onClose={toggleDrawer(false)}
+            PaperProps={{ sx: {height: isSmallScreen ? 'unset' : '60%',
+                              top: isSmallScreen ? '80px' : 'unset',
+                              bottom: isSmallScreen ? '80px' : '10px',
+                              left: isSmallScreen ? '10%' : '10px',
+                              right: isSmallScreen ? '10%' : 'unset'} }}>
+            <Settings login={login} logOut={logOut} currentUser={currentUser} isSmallScreen={isSmallScreen} theme={theme} setTheme={setTheme} toggleDrawer={toggleDrawer} />
+          </Drawer>
+            
+        </Box>
+      </Box>
+    </ThemeProvider>
   )
 }
 

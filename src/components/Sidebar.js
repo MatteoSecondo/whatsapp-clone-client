@@ -2,6 +2,7 @@ import '../public/Sidebar.css'
 import '../public/SidebarChats.css'
 import { useEffect, useState } from 'react'
 import axios from '../axios.js'
+import { Box } from '@mui/material'
 import SidebarHeader from './basic/SidebarHeader.js';
 import SidebarSearch from './basic/SidebarSearch.js';
 import SidebarChats from './basic/SidebarChats.js';
@@ -28,7 +29,7 @@ const Sidebar = ({ currentUser, setCurrentUser, openChat, setOpenChat, searchStr
                         }
                     }) 
                 })
-                if (!found && user._id !== currentUser._id) temp2.push({participants: [user, currentUser], messages: [], _id: Math.floor(Math.random() * 1000) + 1})
+                if (!found && user._id !== currentUser._id) temp2.push({new: true, participants: [user, currentUser], messages: [], _id: Math.floor(Math.random() * 1000) + 1})
             })
             setSearchChats(temp1)
             setSearchNewChats(temp2)
@@ -44,7 +45,7 @@ const Sidebar = ({ currentUser, setCurrentUser, openChat, setOpenChat, searchStr
     }, [searchString])
 
     return (
-        <div className='sidebar' style={{display: (isSmallScreen && openChat) ? 'none' : 'flex'}}>
+        <Box className='sidebar' sx={{backgroundColor: 'background.paper', borderColor: 'border.main'}} style={{display: (isSmallScreen && openChat) ? 'none' : 'flex'}}>
 
             <SidebarHeader currentUser={currentUser} toggleDrawer={toggleDrawer}/>
 
@@ -60,7 +61,7 @@ const Sidebar = ({ currentUser, setCurrentUser, openChat, setOpenChat, searchStr
                 searchNewChats={searchNewChats}
             />
 
-        </div>
+        </Box>
     )
 }
  

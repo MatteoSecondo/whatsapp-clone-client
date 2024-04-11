@@ -1,4 +1,4 @@
-import { IconButton, TextareaAutosize } from '@mui/material'
+import { IconButton, TextareaAutosize, Box } from '@mui/material'
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon'
 import MicIcon from '@mui/icons-material/Mic'
 import SendIcon from '@mui/icons-material/Send'
@@ -6,7 +6,7 @@ import SendIcon from '@mui/icons-material/Send'
 
 const ChatFooter = ({ setShowEmoticons, toggleEmoticons, input, setInput, sendMessage, recordMessage, recordingColor, footerRef, updateHeight }) => {
     return (
-        <div className="chat__footer">
+        <Box className="chat__footer" sx={{borderColor: 'border.main'}}>
                 <IconButton onClick={toggleEmoticons}>
                     <InsertEmoticonIcon />
                 </IconButton>
@@ -31,7 +31,7 @@ const ChatFooter = ({ setShowEmoticons, toggleEmoticons, input, setInput, sendMe
                 <IconButton onClick={sendMessage}>
                     <SendIcon />
                 </IconButton>}
-            </div>
+            </Box>
     );
 }
  

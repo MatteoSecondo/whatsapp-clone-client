@@ -35,8 +35,7 @@ const SidebarChats = ({ currentUser, setCurrentUser, searchString, openChat, set
                         <SidebarChat
                             key={chat._id || Math.floor(Math.random() * 1000) + 1}
                             chat={chat} 
-                            setOpenChat={setOpenChat}
-                            isNewChat={true} 
+                            setOpenChat={setOpenChat} 
                             currentUser={currentUser}
                             setCurrentUser={setCurrentUser}
                             openChat={openChat}

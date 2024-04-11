@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Avatar } from '@mui/material'
+import { Avatar, Box } from '@mui/material'
 import io from 'socket.io-client'
 import CryptoJS from 'crypto-js'
 
-const SidebarChat = ({ chat, setOpenChat, isNewChat, currentUser, setCurrentUser, openChat }) => {
+const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, openChat }) => {
 
     const [ch, setCh] = useState(chat)
 
     useEffect(() => {
-
         const socket = io('localhost:9000')
         socket.emit('join', chat._id)
 
@@ -35,17 +34,12 @@ const SidebarChat = ({ chat, setOpenChat, isNewChat, currentUser, setCurrentUser
 
             setCurrentUser(updatedCurrentUser)
 
-            if (openChat) {
+            if (openChat && openChat._id === ch._id) {
                 setOpenChat((prevOpenChat) => {
                     return {...prevOpenChat, messages: ch.messages}
                 })
             }
     }, [ch])
-
-    const setNewChat = () => {
-        chat.new = true
-        setOpenChat(ch)
-    }
 
     const decryptData = (encryptedData, key) => {
         const bytes  = CryptoJS.AES.decrypt(encryptedData, key);
@@ -53,14 +47,14 @@ const SidebarChat = ({ chat, setOpenChat, isNewChat, currentUser, setCurrentUser
     }
 
     return (
-        <div className="sidebarChat" onClick={() => isNewChat ? setNewChat() : setOpenChat(ch)}>
+        <Box className="sidebarChat" onClick={() =>  setOpenChat(ch)} sx={{':hover': {backgroundColor: 'background.hover'}}}>
             <Avatar src={ch.participants[0]._id !== currentUser._id ? ch.participants[0].picture : ch.participants[1].picture} />
 
             <div className="sidebarChat__info">
                 <h2>{ch.participants[0]._id !== currentUser._id ? ch.participants[0].name : ch.participants[1].name}</h2>
                 {ch.messages.length ? (<p>{ch.messages[ch.messages.length - 1].text || 'Audio'}</p>) : <p>Type a message</p>}
             </div>
-        </div>
+        </Box>
     )
 }
  

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react"
-import { IconButton } from "@mui/material"
+import { IconButton, Box } from "@mui/material"
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import DoneAllIcon from '@mui/icons-material/DoneAll'
 
@@ -19,9 +19,10 @@ const ChatBody = ({ messages, messagesRef, scrollToMessage, currentUser, anchorR
             <div className="chat__body" onWheel={checkIfShowReturnToLastMessage} ref={ref}>
                     {messages && messages.map((message, index) =>
                         (
-                            <div
+                            <Box
                                 key={message._id || Math.floor(Math.random() * 1000) + 1}
                                 className={`chat__message ${currentUser && message.sender._id === currentUser._id && 'chat__receiver'}`}
+                                sx={{backgroundColor: (currentUser && message.sender._id === currentUser._id) ? 'background.sended' : 'background.received'}}
                             >
                                 <span className="chat__name">{message.sender.name}</span>
 
@@ -40,12 +41,12 @@ const ChatBody = ({ messages, messagesRef, scrollToMessage, currentUser, anchorR
                                     <span className="chat__timestamp">{message.timestamp}</span>
                                     <DoneAllIcon />
                                 </div>
-                            </div>
+                            </Box>
                         )
                     )}
 
                     {showReturnToLastMessage &&
-                    <IconButton onClick={() => {scrollToMessage(messagesRef, messagesRef.current.length - 1); setShowReturnToLastMessage(false)}}>
+                    <IconButton onClick={() => {scrollToMessage(messagesRef, messagesRef.current.length - 1); setShowReturnToLastMessage(false)}} sx={{backgroundColor: 'background.paper'}}>
                         <ArrowDownwardIcon />
                     </IconButton>}
 

@@ -1,5 +1,4 @@
-import { Avatar, IconButton } from '@mui/material'
-
+import { Avatar, IconButton, Box } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import SearchIcon from '@mui/icons-material/Search'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
@@ -11,7 +10,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 const ChatHeader = ({ showSearchInput, setShowSearchInput, closeSearchInput, searchString,searchMessage, disableButtons,
                     showPreviousMessage, showNextMessage, openChat, setOpenChat, currentUser, isSmallScreen }) => {
     return (
-        <div className="chat__header">
+        <Box className="chat__header" sx={{borderColor: 'border.main'}}>
                 {isSmallScreen &&
                 <IconButton onClick={() => setOpenChat(null)}>
                     <ArrowBackIcon />
@@ -25,7 +24,7 @@ const ChatHeader = ({ showSearchInput, setShowSearchInput, closeSearchInput, sea
                 <div className="chat__headerRight">
                     {showSearchInput &&
                     <div className="chat__search">
-                        <div className="chat__searchContainer">
+                        <Box className="chat__searchContainer" sx={{backgroundColor: 'background.paper'}}>
                             <input type='text' placeholder='Search messages' value={searchString} onChange={searchMessage} />
                             <IconButton onClick={showPreviousMessage} disabled={disableButtons}>
                                 <KeyboardArrowUpIcon />
@@ -37,7 +36,7 @@ const ChatHeader = ({ showSearchInput, setShowSearchInput, closeSearchInput, sea
                                 <CloseIcon />
                             </IconButton>
 
-                        </div>
+                        </Box>
                     </div>}
                     {!showSearchInput &&
                     <>
@@ -53,7 +52,7 @@ const ChatHeader = ({ showSearchInput, setShowSearchInput, closeSearchInput, sea
                     </>
                     }
                 </div>
-            </div>
+            </Box>
     );
 }
  

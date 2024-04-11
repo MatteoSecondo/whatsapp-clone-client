@@ -9,9 +9,9 @@
     padding: 20px;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid lightgray;
     height: 3rem;
     position: relative;
+    border-bottom: 1px solid;
 }
 
 .chat__header > .MuiButtonBase-root {
@@ -60,7 +60,6 @@
 }
 
 .chat__body > .MuiButtonBase-root {
-    background-color: white;
     position: absolute;
     right: 10px;
     bottom: 10px;
@@ -76,7 +75,6 @@
     padding: 10px;
     width: fit-content;
     border-radius: 10px;
-    background-color: #ffffff;
     margin-bottom: 30px;
 }
 
@@ -98,7 +96,6 @@
 
 .chat__receiver {
     margin-left: auto;
-    background-color: #dcf8c6;
 }
 
 .chat__timestamp{
@@ -118,6 +115,7 @@
     justify-content: space-between;
     align-items: center;
     flex: 1;
+    border-top: 1px solid;
 }
 
 .chat__footer > form {
@@ -132,6 +130,8 @@
     border-radius: 30px;
     padding: 10px;
     resize: none;
+    background-color: inherit;
+    color: inherit;
 }
 
 .chat__footer > form > button {
@@ -140,7 +140,6 @@
 
 .chat__footer > .MuiSvgIcon-root {
     padding: 10px;
-    color: gray;
 }
 
 .chat__picker {
@@ -167,13 +166,11 @@
     height: 25px;
     padding: 10px;
     border-radius: 20px;
-    border: 1px solid lightgray;
-    background-color: #ededed;
 }
 
 .chat__searchContainer > input {
     width: 7rem;
-    background-color: #ededed;
+    background-color: inherit;
     border: none;
     outline-width: 0;
     margin-left: 10px;
