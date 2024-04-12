@@ -10,7 +10,7 @@ import ChatBody from './basic/ChatBody'
 import ChatHeader from './basic/ChatHeader'
 import ChatFooter from './basic/ChatFooter'
 
-const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, currentUser, isSmallScreen, theme, sidebarSearchString }) => {
+const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, currentUser, isSmallScreen, theme }) => {
 
     const [input, setInput] = useState('')
     const [socket, setSocket] = useState(null)
@@ -211,7 +211,9 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
                 messagesRef={messagesRef}
                 scrollToMessage={scrollToMessage}
                 currentUser={currentUser}
+                setCurrentUser={setCurrentUser}
                 anchorRef={anchorRef}
+                openChatId={openChat._id}
             />
 
             <ChatFooter 

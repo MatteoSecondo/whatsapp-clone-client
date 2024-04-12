@@ -47,7 +47,7 @@ const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, openChat 
     }
 
     return (
-        <Box className="sidebarChat" onClick={() =>  setOpenChat(ch)} sx={{':hover': {backgroundColor: 'background.hover'}}}>
+        <Box className="sidebarChat" onClick={() => setOpenChat(ch)} sx={{':hover': {backgroundColor: 'background.hover'}}}>
             <Avatar src={ch.participants[0]._id !== currentUser._id ? ch.participants[0].picture : ch.participants[1].picture} />
 
             <div className="sidebarChat__info">

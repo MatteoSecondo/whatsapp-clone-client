@@ -31,7 +31,7 @@ function App() {
 
   useEffect(() => {
     async function checkAuth() {
-      const response = await axios.get('/users/auth', {headers: {accessToken: localStorage.getItem('accessToken')}});
+      const response = await axios.get('/users/auth', {headers: {accessToken: localStorage.getItem('accessToken')}})
       if (response.data.error) console.log(response.data.error)
       else {
         const fullCurrentUser = await axios.get('/users/populate', {headers: {accessToken: localStorage.getItem('accessToken')}})
@@ -142,7 +142,6 @@ function App() {
               currentUser={currentUser}
               isSmallScreen={isSmallScreen}
               theme={theme}
-              sidebarSearchString={searchString}
             /> :
             <Blank currentUser={currentUser} toggleDrawer={toggleDrawer} />
           }
