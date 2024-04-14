@@ -4,25 +4,23 @@ import io from 'socket.io-client'
 import { Box } from "@mui/material"
 import DoneAllIcon from '@mui/icons-material/DoneAll'
 
-const Message = ({ message, index, currentUser, setCurrentUser, messagesRef, openChatId }) => {
+const Message = ({ message, index, currentUser, setCurrentUser, messagesRef, openChatId, theme }) => {
 
     const [isRead, setIsRead] = useState(message.isRead)
 
     useEffect(() => {
         async function isRead() {
-            if (!message.isRead && message.sender._id !== currentUser._id) {
-                await axios.get(`/messages/${message._id}`, {headers: {accessToken: localStorage.getItem('accessToken')}})
-            }
+            await axios.get(`/messages/${message._id}`, {headers: {accessToken: localStorage.getItem('accessToken')}})
         }
 
-        /*if (!message.isRead && message.sender._id === currentUser._id) {
+        if (!message.isRead && message.sender._id === currentUser._id) {
             const socket = io('localhost:9000')
 
             socket.on('message-read', (value) => {
 
                 setIsRead(value)
 
-                setCurrentUser({
+                setCurrentUser(() => {return {
                     ...currentUser,
                     chats: currentUser.chats.map((chat) => {
                         if (chat._id === openChatId) {
@@ -38,13 +36,14 @@ const Message = ({ message, index, currentUser, setCurrentUser, messagesRef, ope
                         }
                         return chat
                     }),
-                })
+                }})
 
                 socket.disconnect()
             })
-        }*/
-        
-        isRead()
+        }
+        else if (!message.isRead && message.sender._id !== currentUser._id) {
+            isRead()
+        }
     }, [])
 
     return (
@@ -54,7 +53,7 @@ const Message = ({ message, index, currentUser, setCurrentUser, messagesRef, ope
             sx={{backgroundColor: (currentUser && message.sender._id === currentUser._id) ? 'background.sended' : 'background.received'}}
         >
             <span className="chat__name">{message.sender.name}</span>
-
+            
             {!message?.audio ?
             <div
                 className='chat__messageText'
@@ -69,7 +68,7 @@ const Message = ({ message, index, currentUser, setCurrentUser, messagesRef, ope
 
             <div className="chat__messageFooter">
                 <span className="chat__timestamp">{message.timestamp}</span>
-                {message.sender._id === currentUser._id && <DoneAllIcon color={isRead && 'primary'} />}
+                {message.sender._id === currentUser._id && <DoneAllIcon sx={{color: isRead && (theme ? 'cyan' : '#00b4d8')}} />}
             </div>
         </Box>
     )

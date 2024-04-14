@@ -10,16 +10,45 @@
     width: calc(100% - 40px);
 }
 
-.sidebarChat__info > p {
+.sidebarChat__infoText {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    width: 80%;
+    width: 85%;
 }
 
-.sidebarChat__info > h2 {
+.sidebarChat__infoTimestamp {
+   font-size: x-small;
+   display: flex;
+   align-items: center;
+   margin-left: 15px;
+}
+
+.sidebarChat__info h2 {
     font-size: 16px;
-    margin-bottom: 8px;
+    margin-right: auto;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sidebarChat__info .MuiSvgIcon-root {
+    margin-right: 5px;
+    margin-top: 4px;
+    font-size: large;
+}
+
+.sidebarChat__infoBadge{
+    padding: 5px;
+    background-color: green;
+    border-radius: 100%;
+    color: white;
+    font-size: x-small;
+    width: 10px;
+    height: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sidebarChats > h2 {

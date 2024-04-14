@@ -214,6 +214,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
                 setCurrentUser={setCurrentUser}
                 anchorRef={anchorRef}
                 openChatId={openChat._id}
+                theme={theme}
             />
 
             <ChatFooter 

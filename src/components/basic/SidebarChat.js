@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Avatar, Box } from '@mui/material'
 import io from 'socket.io-client'
 import CryptoJS from 'crypto-js'
+import { Avatar, Box } from '@mui/material'
+import DoneAllIcon from '@mui/icons-material/DoneAll'
 
-const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, openChat }) => {
 
-    const [ch, setCh] = useState(chat)
+const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, openChat, theme }) => {
+
+    const [lastMessage, setLastMessage] = useState(chat.messages[chat.messages.length - 1])
+    const [badgeNumber, setBadgeNumber] = useState(chat.messages.filter(m => !m.isRead && m.sender._id !== currentUser._id).length)
 
     useEffect(() => {
         const socket = io('localhost:9000')
@@ -13,33 +16,49 @@ const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, openChat 
 
         socket.on('server-client', (message) => {
             const decryptedData = decryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
-            setCh((prevCh) => {return {...prevCh, messages: [...prevCh.messages, decryptedData]}})
+        
+            setCurrentUser((prevCurrentUser) => {return {
+                ...prevCurrentUser,
+                chats: prevCurrentUser.chats.map((ch) => {
+                    if (ch._id === chat._id) {
+                        return {
+                            ...ch,
+                            messages: [...ch.messages, decryptedData]
+                        }
+                    }
+                    return ch
+                }),
+            }})
+    
+            setOpenChat((prevOpenChat) => {if (prevOpenChat) {return {...prevOpenChat, messages: [...prevOpenChat.messages, decryptedData]}}})
         })
 
         return () => socket.disconnect()
     }, [])
 
     useEffect(() => {
-            const updatedChats = [...currentUser.chats]
-            const existingChatIndex = updatedChats.findIndex(c => c._id === ch._id)
+        setLastMessage(chat.messages[chat.messages.length - 1])
+        setBadgeNumber(chat.messages.filter(m => !m.isRead && m.sender._id !== currentUser._id).length)
+    }, [chat])
 
-            if (existingChatIndex !== -1) {
-                updatedChats[existingChatIndex] = ch
-            } 
-            else {
-                if (ch._id > 1000) updatedChats.push(ch)
-            }
-
-            const updatedCurrentUser = {...currentUser, chats: updatedChats}
-
-            setCurrentUser(updatedCurrentUser)
-
-            if (openChat && openChat._id === ch._id) {
-                setOpenChat((prevOpenChat) => {
-                    return {...prevOpenChat, messages: ch.messages}
-                })
-            }
-    }, [ch])
+    useEffect(() => {
+        if (lastMessage.sender._id !== currentUser._id) {
+            setCurrentUser(() => {return {
+                ...currentUser,
+                chats: currentUser.chats.map((chat) => {
+                    if (openChat && chat._id === openChat._id) {
+                        return {
+                            ...chat,
+                            messages: chat.messages.map((mess) => {
+                                return { ...mess, isRead: true }
+                            }),
+                        }
+                    }
+                    return chat
+                }),
+            }})
+        }
+    }, [openChat])
 
     const decryptData = (encryptedData, key) => {
         const bytes  = CryptoJS.AES.decrypt(encryptedData, key);
@@ -47,12 +66,22 @@ const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, openChat 
     }
 
     return (
-        <Box className="sidebarChat" onClick={() => setOpenChat(ch)} sx={{':hover': {backgroundColor: 'background.hover'}}}>
-            <Avatar src={ch.participants[0]._id !== currentUser._id ? ch.participants[0].picture : ch.participants[1].picture} />
+        <Box className="sidebarChat" onClick={() => setOpenChat(chat)} sx={{':hover': {backgroundColor: 'background.hover'}}}>
+            <Avatar src={chat.participants[0]._id !== currentUser._id ? chat.participants[0].picture : chat.participants[1].picture} />
 
             <div className="sidebarChat__info">
-                <h2>{ch.participants[0]._id !== currentUser._id ? ch.participants[0].name : ch.participants[1].name}</h2>
-                {ch.messages.length ? (<p>{ch.messages[ch.messages.length - 1].text || 'Audio'}</p>) : <p>Type a message</p>}
+                <div style={{display: 'flex', marginBottom: '8px'}}>
+                    <h2>{chat.participants[0]._id !== currentUser._id ? chat.participants[0].name : chat.participants[1].name}</h2>
+                    <p className='sidebarChat__infoTimestamp'>{lastMessage.timestamp}</p>
+                </div>
+                
+                <div style={{display: 'flex'}}>
+                    {lastMessage.sender._id === currentUser._id &&
+                        <DoneAllIcon sx={{color: lastMessage.isRead && (theme ? 'cyan' : '#00b4d8')}} />
+                    }
+                    {chat.messages.length ? (<p className='sidebarChat__infoText'>{lastMessage.text || 'Audio'}</p>) : <p>Type a message</p>}
+                    <p className='sidebarChat__infoBadge'>{badgeNumber}</p>
+                </div>
             </div>
         </Box>
     )

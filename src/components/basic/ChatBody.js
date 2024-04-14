@@ -3,7 +3,7 @@ import { IconButton } from "@mui/material"
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import Message from "./Message"
 
-const ChatBody = ({ messages, messagesRef, scrollToMessage, currentUser, setCurrentUser, anchorRef, openChatId }) => {
+const ChatBody = ({ messages, messagesRef, scrollToMessage, currentUser, setCurrentUser, anchorRef, openChatId, theme }) => {
 
     const [showReturnToLastMessage, setShowReturnToLastMessage] = useState(false)
     const ref = useRef()
@@ -27,6 +27,7 @@ const ChatBody = ({ messages, messagesRef, scrollToMessage, currentUser, setCurr
                             messagesRef={messagesRef}
                             setCurrentUser={setCurrentUser}
                             openChatId={openChatId}
+                            theme={theme}
                         />)
                     }
 

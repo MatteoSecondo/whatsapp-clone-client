@@ -97,7 +97,7 @@ function App() {
       },
       border: {
         main: 'lightgray',
-      }
+      },
     },
   })
 
@@ -113,7 +113,7 @@ function App() {
       },
       border: {
         main: 'black',
-      }
+      },
     },
   })
 
@@ -131,6 +131,7 @@ function App() {
             setSearchString={setSearchString}
             toggleDrawer={toggleDrawer}
             isSmallScreen={isSmallScreen}
+            theme={theme}
           />
 
           {openChat && currentUser ?

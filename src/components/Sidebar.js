@@ -7,7 +7,7 @@ import SidebarHeader from './basic/SidebarHeader.js';
 import SidebarSearch from './basic/SidebarSearch.js';
 import SidebarChats from './basic/SidebarChats.js';
 
-const Sidebar = ({ currentUser, setCurrentUser, openChat, setOpenChat, searchString, setSearchString, toggleDrawer, isSmallScreen }) => {
+const Sidebar = ({ currentUser, setCurrentUser, openChat, setOpenChat, searchString, setSearchString, toggleDrawer, isSmallScreen, theme }) => {
 
     const [searchChats, setSearchChats] = useState([])
     const [searchNewChats, setSearchNewChats] = useState([])
@@ -59,6 +59,7 @@ const Sidebar = ({ currentUser, setCurrentUser, openChat, setOpenChat, searchStr
                 setOpenChat={setOpenChat}
                 searchChats={searchChats}
                 searchNewChats={searchNewChats}
+                theme={theme}
             />
 
         </Box>
