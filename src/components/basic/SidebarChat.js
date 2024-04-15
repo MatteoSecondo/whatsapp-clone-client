@@ -11,7 +11,7 @@ const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, theme }) 
     const badgeNumber = chat.messages.filter(m => !m.isRead && m.sender._id !== currentUser._id).length
 
     useEffect(() => {
-        const socket = io('localhost:9000')
+        const socket = io(process.env.REACT_APP_SERVER_URL)
         socket.emit('join', chat._id)
 
         socket.on('server-client', (message) => {

@@ -30,7 +30,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
     const audioControls = useAudioRecorder()
 
     useEffect(() => {
-        let tempSocket = io('localhost:9000')
+        let tempSocket = io(process.env.REACT_APP_SERVER_URL)
         setSocket(tempSocket)
         
         return () => {tempSocket.disconnect(); setSocket(null)}
@@ -164,7 +164,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
     }
 
     const scrollToMessage = (ref, index) => {
-        ref.current[index].scrollIntoView({ behavior: 'smooth', block: 'start' })
+        ref.current[index].scrollIntoView({ block: 'start' })
     }
 
     const closeSearchInput = () => {
