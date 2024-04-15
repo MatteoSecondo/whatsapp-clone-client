@@ -1,49 +1,16 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import axios from '../../axios.js'
-import io from 'socket.io-client'
 import { Box } from "@mui/material"
 import DoneAllIcon from '@mui/icons-material/DoneAll'
 
-const Message = ({ message, index, currentUser, setCurrentUser, messagesRef, openChatId, theme }) => {
-
-    const [isRead, setIsRead] = useState(message.isRead)
+const Message = ({ message, index, currentUser, messagesRef, theme }) => {
 
     useEffect(() => {
-        async function isRead() {
-            await axios.get(`/messages/${message._id}`, {headers: {accessToken: localStorage.getItem('accessToken')}})
+        async function sendIsRead() {
+            await axios.put('/messages/seen', {messageId : message._id},{headers: {accessToken: localStorage.getItem('accessToken')}})
         }
 
-        if (!message.isRead && message.sender._id === currentUser._id) {
-            const socket = io('localhost:9000')
-
-            socket.on('message-read', (value) => {
-
-                setIsRead(value)
-
-                setCurrentUser(() => {return {
-                    ...currentUser,
-                    chats: currentUser.chats.map((chat) => {
-                        if (chat._id === openChatId) {
-                            return {
-                                ...chat,
-                                messages: chat.messages.map((mess) => {
-                                if (mess._id === message._id) {
-                                    return { ...mess, isRead: value }
-                                }
-                                return mess
-                                }),
-                            }
-                        }
-                        return chat
-                    }),
-                }})
-
-                socket.disconnect()
-            })
-        }
-        else if (!message.isRead && message.sender._id !== currentUser._id) {
-            isRead()
-        }
+        if (!message.isRead && message.sender._id !== currentUser._id) sendIsRead()
     }, [])
 
     return (
@@ -68,7 +35,7 @@ const Message = ({ message, index, currentUser, setCurrentUser, messagesRef, ope
 
             <div className="chat__messageFooter">
                 <span className="chat__timestamp">{message.timestamp}</span>
-                {message.sender._id === currentUser._id && <DoneAllIcon sx={{color: isRead && (theme ? 'cyan' : '#00b4d8')}} />}
+                {message.sender._id === currentUser._id && <DoneAllIcon sx={{color: message.isRead && (theme ? 'cyan' : '#00b4d8')}} />}
             </div>
         </Box>
     )

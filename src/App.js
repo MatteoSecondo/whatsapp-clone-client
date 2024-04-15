@@ -38,7 +38,7 @@ function App() {
         setCurrentUser(fullCurrentUser.data)
       }
     }
-
+    
     checkAuth()
   }, [])
 
@@ -53,19 +53,19 @@ function App() {
       localStorage.setItem('accessToken', response.data.token)
       const fullCurrentUser = await axios.get('/users/populate', {headers: {accessToken: localStorage.getItem('accessToken')}})
       setCurrentUser(fullCurrentUser.data)
-      }
+    }
 
-      if (googleUser) {
-        axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleUser.access_token}`, {
-          headers: {
-            Authorization: `Bearer ${googleUser.access_token}`,
-            Accept: 'application/json'
-          }
-        })
-        .then((res) => {
-          findOrCreateUser(res.data)
-        })
-        .catch((err) => console.log(err))
+    if (googleUser) {
+      axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleUser.access_token}`, {
+        headers: {
+          Authorization: `Bearer ${googleUser.access_token}`,
+          Accept: 'application/json'
+        }
+      })
+      .then((res) => {
+        findOrCreateUser(res.data)
+      })
+      .catch((err) => console.log(err))
       }
   }, [googleUser])
 
@@ -82,7 +82,7 @@ function App() {
   }
 
   const toggleDrawer = (boolean) => () => {
-    setOpenDrawer(boolean);
+    setOpenDrawer(boolean)
   }
 
   const lightTheme = createTheme({

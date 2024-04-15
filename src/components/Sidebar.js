@@ -55,7 +55,6 @@ const Sidebar = ({ currentUser, setCurrentUser, openChat, setOpenChat, searchStr
                 currentUser={currentUser}
                 setCurrentUser={setCurrentUser}
                 searchString={searchString}
-                openChat={openChat}
                 setOpenChat={setOpenChat}
                 searchChats={searchChats}
                 searchNewChats={searchNewChats}

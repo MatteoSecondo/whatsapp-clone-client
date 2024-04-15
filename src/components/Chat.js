@@ -96,6 +96,8 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
         }
         else chatId = openChat._id
 
+        message.chat = chatId
+
         setChatSearchString('')
 
         if (blob) {
@@ -104,20 +106,20 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
             reader.onload = function (event) {
                 const base64String = event.target.result
                 message.audio = base64String
-                const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
-                socket.emit('client-server', { chatId: chatId, message: encryptedData });
-            };
+                const encryptedData = encryptData(message, process.env.REACT_APP_ENCRYPTION_KEY)
+                socket.emit('client-server', encryptedData)
+            }
             
             reader.onerror = function (error) {
                 console.log(error)
-            };
+            }
             
             reader.readAsDataURL(blob)
         }
         else {
             message.text = tempInput
-            const encryptedData = encryptData(message, '3M/IwH6UeOARJ3m3Ap18rg==')
-            socket.emit('client-server', { chatId: chatId, message: encryptedData })
+            const encryptedData = encryptData(message, process.env.REACT_APP_ENCRYPTION_KEY)
+            socket.emit('client-server', encryptedData)
         }
 
         anchorRef.current.style.height = 'calc(100% - 40px - 62px - 3rem)'
@@ -211,9 +213,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
                 messagesRef={messagesRef}
                 scrollToMessage={scrollToMessage}
                 currentUser={currentUser}
-                setCurrentUser={setCurrentUser}
                 anchorRef={anchorRef}
-                openChatId={openChat._id}
                 theme={theme}
             />
 

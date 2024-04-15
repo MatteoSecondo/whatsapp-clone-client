@@ -1,6 +1,6 @@
 import SidebarChat from './SidebarChat.js'
 
-const SidebarChats = ({ currentUser, setCurrentUser, searchString, openChat, setOpenChat, searchChats, searchNewChats, theme }) => {
+const SidebarChats = ({ currentUser, setCurrentUser, searchString, setOpenChat, searchChats, searchNewChats, theme }) => {
     return (
         <div className="sidebarChats">
 
@@ -12,7 +12,6 @@ const SidebarChats = ({ currentUser, setCurrentUser, searchString, openChat, set
                         setOpenChat={setOpenChat}
                         currentUser={currentUser}
                         setCurrentUser={setCurrentUser}
-                        openChat={openChat}
                         theme={theme}
                     />
                 ))
@@ -28,7 +27,6 @@ const SidebarChats = ({ currentUser, setCurrentUser, searchString, openChat, set
                             setOpenChat={setOpenChat}
                             currentUser={currentUser}
                             setCurrentUser={setCurrentUser}
-                            openChat={openChat}
                             theme={theme}
                         />
                     ))}
@@ -40,7 +38,6 @@ const SidebarChats = ({ currentUser, setCurrentUser, searchString, openChat, set
                             setOpenChat={setOpenChat} 
                             currentUser={currentUser}
                             setCurrentUser={setCurrentUser}
-                            openChat={openChat}
                             theme={theme}
                         />
                     ))}
