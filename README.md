@@ -5,6 +5,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Features
 The app support real time messaging, end-to-end encryption for messages, google login, customization settings and similar functions like those of Whatsapp.
 
+## Incoming features
+The next features to be added are chat groups, sending files, videos and photos, publishing stories.
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
