@@ -16,14 +16,14 @@ function App() {
   const [openChat, setOpenChat] = useState(null)
   const [searchString, setSearchString] = useState('')
   const [openDrawer, setOpenDrawer] = useState(false)
-  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 840)
+  const [windowSize, setWindowSize] = useState(window.innerWidth)
   const [theme, setTheme] = useState(localStorage.getItem('theme') === 'true' ? true : false)
   const [isLoading, setIsLoading] = useState(localStorage.getItem('accessToken') ? true : false)
   const [onPressEnter, setOnPressEnter] = useState(localStorage.getItem('onPressEnter') === 'true' ? true : false)
 
   useEffect(() => {
     const handleResize = () => {
-      setIsSmallScreen(window.innerWidth < 840)
+      setWindowSize(window.innerWidth)
     }
 
     window.addEventListener('resize', handleResize)
@@ -137,7 +137,7 @@ function App() {
             searchString={searchString} 
             setSearchString={setSearchString}
             toggleDrawer={toggleDrawer}
-            isSmallScreen={isSmallScreen}
+            windowSize={windowSize}
             theme={theme}
           />
 
@@ -148,7 +148,7 @@ function App() {
               setChatSearchString={setSearchString}
               setCurrentUser={setCurrentUser}
               currentUser={currentUser}
-              isSmallScreen={isSmallScreen}
+              windowSize={windowSize}
               theme={theme}
               onPressEnter={onPressEnter}
             /> :
@@ -158,16 +158,16 @@ function App() {
           <Drawer
             open={openDrawer}
             onClose={toggleDrawer(false)}
-            PaperProps={{ sx: {height: isSmallScreen ? 'unset' : '60%',
-                              top: isSmallScreen ? '80px' : 'unset',
-                              bottom: isSmallScreen ? '80px' : '10px',
-                              left: isSmallScreen ? '10%' : '10px',
-                              right: isSmallScreen ? '10%' : 'unset'} }}>
+            PaperProps={{ sx: {height: windowSize < 840 ? 'unset' : '60%',
+                              top: windowSize < 840 ? '80px' : 'unset',
+                              bottom: windowSize < 840 ? '80px' : '10px',
+                              left: windowSize < 840 ? '10%' : '10px',
+                              right: windowSize < 840 ? '10%' : 'unset'} }}>
             <Settings
               login={login}
               logOut={logOut} 
               currentUser={currentUser}
-              isSmallScreen={isSmallScreen}
+              windowSize={windowSize}
               theme={theme}
               setTheme={setTheme}
               toggleDrawer={toggleDrawer}

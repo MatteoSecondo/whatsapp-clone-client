@@ -30,7 +30,10 @@ const ChatBody = ({ messages, messagesRef, scrollToMessage, currentUser, anchorR
                     }
 
                     {showReturnToLastMessage &&
-                    <IconButton onClick={() => {scrollToMessage(messagesRef, messagesRef.current.length - 1); setShowReturnToLastMessage(false)}} sx={{backgroundColor: 'background.paper'}}>
+                    <IconButton 
+                        onClick={() => {scrollToMessage(messagesRef, messagesRef.current.length - 1); setShowReturnToLastMessage(false)}}
+                        sx={{':hover': {backgroundColor: 'background.paper'}, backgroundColor: 'background.paper'}}
+                    >
                         <ArrowDownwardIcon />
                     </IconButton>}
 

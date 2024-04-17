@@ -2,7 +2,6 @@ import '../public/Chat.css'
 import { useEffect, useRef, useState } from 'react'
 import { useAudioRecorder } from 'react-audio-voice-recorder'
 import axios from '../axios.js'
-import io from 'socket.io-client'
 import CryptoJS from 'crypto-js'
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
@@ -10,7 +9,7 @@ import ChatBody from './basic/ChatBody'
 import ChatHeader from './basic/ChatHeader'
 import ChatFooter from './basic/ChatFooter'
 
-const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, currentUser, isSmallScreen, theme, onPressEnter }) => {
+const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, currentUser, windowSize, theme, onPressEnter }) => {
 
     const [input, setInput] = useState('')
     const [recordingColor, setRecordingColor] = useState(null)
@@ -183,7 +182,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
     }
 
     return (
-        <div className="chat" style={{display: isSmallScreen ? (openChat ? 'flex' : 'none') : 'flex'}} onKeyDown={handleKeyDown} tabIndex={0}>
+        <div className="chat" style={{display: windowSize < 840 ? (openChat ? 'flex' : 'none') : 'flex'}} onKeyDown={handleKeyDown} tabIndex={0}>
 
             <ChatHeader
                 showSearchInput={showSearchInput}
@@ -197,7 +196,9 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
                 openChat={openChat}
                 setOpenChat={setOpenChat}
                 currentUser={currentUser}
-                isSmallScreen={isSmallScreen}
+                windowSize={windowSize}
+                currentMessageIndex={currentMessageIndex}
+                filteredMessagesRef={filteredMessagesRef}
             />
 
             <ChatBody

@@ -2,11 +2,11 @@ import { Button, IconButton } from '@mui/material'
 import LogoutIcon from '@mui/icons-material/Logout'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
-const Profile = ({ login, logOut, currentUser, setCurrentTabIndex, isSmallScreen }) => {
+const Profile = ({ login, logOut, currentUser, setCurrentTabIndex, windowSize }) => {
     return (
         <div className="settings__general">
             <div className='settings__header'>
-                {isSmallScreen &&
+                {windowSize < 840 &&
                 <IconButton onClick={() => setCurrentTabIndex(5)}>
                     <ArrowBackIcon />
                 </IconButton>}

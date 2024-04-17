@@ -7,7 +7,7 @@ import SidebarHeader from './basic/SidebarHeader.js';
 import SidebarSearch from './basic/SidebarSearch.js';
 import SidebarChats from './basic/SidebarChats.js';
 
-const Sidebar = ({ currentUser, setCurrentUser, openChat, setOpenChat, searchString, setSearchString, toggleDrawer, isSmallScreen, theme }) => {
+const Sidebar = ({ currentUser, setCurrentUser, openChat, setOpenChat, searchString, setSearchString, toggleDrawer, windowSize, theme }) => {
 
     const [searchChats, setSearchChats] = useState([])
     const [searchNewChats, setSearchNewChats] = useState([])
@@ -45,7 +45,7 @@ const Sidebar = ({ currentUser, setCurrentUser, openChat, setOpenChat, searchStr
     }, [searchString])
 
     return (
-        <Box className='sidebar' sx={{backgroundColor: 'background.paper', borderColor: 'border.main'}} style={{display: (isSmallScreen && openChat) ? 'none' : 'flex'}}>
+        <Box className='sidebar' sx={{backgroundColor: 'background.paper', borderColor: 'border.main'}} style={{display: (windowSize < 840 && openChat) ? 'none' : 'flex'}}>
 
             <SidebarHeader currentUser={currentUser} toggleDrawer={toggleDrawer}/>
 

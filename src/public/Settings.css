@@ -3,9 +3,13 @@
 }
 
 .settings__tab > div {
-    width: 30vw;
+    width: 40vw;
     text-align: center;
     margin-top: 1rem;
+}
+
+.MuiTabs-root {
+    width: auto !important;
 }
 
 .settings__div {
@@ -36,7 +40,7 @@
 
 .settings__header .MuiSvgIcon-root {
     display: inline;
-    margin: 0 10px 5px;
+    margin-bottom: 5px;
 }
 
 .settings__header > h2 {
@@ -44,10 +48,30 @@
     margin-bottom: 20px;
 }
 
+.settings__body > p {
+    margin: 10px;
+}
+
+.settings__body > .MuiButtonBase-root{
+    margin: 0 10px;
+}
+
+.settings__body > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 10px;
+    width: 90%;
+}
+
+.settings__body > div > p {
+    margin-right: 10px;
+}
+
 @media screen and (max-width: 840px) {
 
     .settings__header {
-        margin: 20px 0 20px -1.7rem;
+        margin: 20px 10px;
     }
 
     .settings__header > h2 {

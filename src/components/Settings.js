@@ -9,14 +9,14 @@ import Profile from './basic/Profile'
 import ChatSettings from './basic/ChatSettings'
 import CustomizationSettings from './basic/CustomizationSettings'
 
-const Settings = ({ login, logOut, currentUser, isSmallScreen, theme, setTheme, toggleDrawer, onPressEnter, setOnPressEnter }) => {
+const Settings = ({ login, logOut, currentUser, windowSize, theme, setTheme, toggleDrawer, onPressEnter, setOnPressEnter }) => {
 
-    const [currentTabIndex, setCurrentTabIndex] = useState(isSmallScreen ? 5: 0)
+    const [currentTabIndex, setCurrentTabIndex] = useState(windowSize < 840 ? 5: 0)
 
     return (
         <div className="settings">
 
-            {!isSmallScreen ?
+            {windowSize >= 840 ?
                 <div className='settings__tab'>
                     <Tabs value={currentTabIndex === 5 ? 0 : currentTabIndex} onChange={(e, tabIndex) => setCurrentTabIndex(tabIndex)} orientation='vertical'>
                         <Tab label='Chat' icon={<ChatIcon />} />
@@ -52,9 +52,9 @@ const Settings = ({ login, logOut, currentUser, isSmallScreen, theme, setTheme, 
                         </div>
                     </>
                     }
-                    {currentTabIndex === 0 && <ChatSettings setCurrentTabIndex={setCurrentTabIndex} isSmallScreen={isSmallScreen} onPressEnter={onPressEnter} setOnPressEnter={setOnPressEnter} />}
-                    {currentTabIndex === 1 && <CustomizationSettings setCurrentTabIndex={setCurrentTabIndex} isSmallScreen={isSmallScreen} theme={theme} setTheme={setTheme} />}
-                    {currentTabIndex === 2 && <Profile login={login} logOut={logOut} currentUser={currentUser} setCurrentTabIndex={setCurrentTabIndex} isSmallScreen={isSmallScreen} />}
+                    {currentTabIndex === 0 && <ChatSettings setCurrentTabIndex={setCurrentTabIndex} windowSize={windowSize} onPressEnter={onPressEnter} setOnPressEnter={setOnPressEnter} />}
+                    {currentTabIndex === 1 && <CustomizationSettings setCurrentTabIndex={setCurrentTabIndex} windowSize={windowSize} theme={theme} setTheme={setTheme} />}
+                    {currentTabIndex === 2 && <Profile login={login} logOut={logOut} currentUser={currentUser} setCurrentTabIndex={setCurrentTabIndex} windowSize={windowSize} />}
                 </div>
             }            
 

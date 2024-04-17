@@ -2,7 +2,7 @@ import { IconButton, Switch, FormControlLabel } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
-const CustomizationSettings = ({ setCurrentTabIndex, isSmallScreen, theme, setTheme }) => {
+const CustomizationSettings = ({ setCurrentTabIndex, windowSize, theme, setTheme }) => {
 
     const MaterialUISwitch = styled(Switch)(({ theme }) => ({
         width: 62,
@@ -54,7 +54,7 @@ const CustomizationSettings = ({ setCurrentTabIndex, isSmallScreen, theme, setTh
     return (
         <div className="settings__general">
             <div className='settings__header'>
-                {isSmallScreen &&
+                {windowSize < 840 &&
                 <IconButton onClick={() => setCurrentTabIndex(5)}>
                     <ArrowBackIcon />
                 </IconButton>}
