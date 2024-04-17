@@ -13,7 +13,6 @@ import ChatFooter from './basic/ChatFooter'
 const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, currentUser, isSmallScreen, theme }) => {
 
     const [input, setInput] = useState('')
-    const [socket, setSocket] = useState(null)
     const [recordingColor, setRecordingColor] = useState(null)
     const [showEmoticons, setShowEmoticons] = useState(false)
 
@@ -28,13 +27,6 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
     const footerRef = useRef()
 
     const audioControls = useAudioRecorder()
-
-    useEffect(() => {
-        let tempSocket = io(process.env.REACT_APP_SERVER_URL)
-        setSocket(tempSocket)
-        
-        return () => {tempSocket.disconnect(); setSocket(null)}
-    }, [])
 
     useEffect(() => {
         if (!audioControls.recordingBlob) return
@@ -107,7 +99,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
                 const base64String = event.target.result
                 message.audio = base64String
                 const encryptedData = encryptData(message, process.env.REACT_APP_ENCRYPTION_KEY)
-                socket.emit('client-server', encryptedData)
+                openChat.socket.emit('client-server', encryptedData)
             }
             
             reader.onerror = function (error) {
@@ -119,7 +111,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
         else {
             message.text = tempInput
             const encryptedData = encryptData(message, process.env.REACT_APP_ENCRYPTION_KEY)
-            socket.emit('client-server', encryptedData)
+            openChat.socket.emit('client-server', encryptedData)
         }
 
         anchorRef.current.style.height = 'calc(100% - 40px - 62px - 3rem)'
