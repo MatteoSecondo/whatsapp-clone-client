@@ -62,8 +62,7 @@ const CustomizationSettings = ({ setCurrentTabIndex, isSmallScreen, theme, setTh
             </div>
 
             <FormControlLabel
-              control={<MaterialUISwitch onClick={() => {setTheme(!theme); localStorage.setItem('theme', !theme)}}
-              checked={theme}/>}
+              control={<MaterialUISwitch onClick={() => {setTheme(!theme); localStorage.setItem('theme', !theme)}} checked={theme}/>}
               label='Theme'
               labelPlacement='start'
             />

@@ -3,8 +3,14 @@ import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon'
 import MicIcon from '@mui/icons-material/Mic'
 import SendIcon from '@mui/icons-material/Send'
 
+const ChatFooter = ({ setShowEmoticons, toggleEmoticons, input, setInput, sendMessage, recordMessage, recordingColor, footerRef, updateHeight, onPressEnter }) => {
 
-const ChatFooter = ({ setShowEmoticons, toggleEmoticons, input, setInput, sendMessage, recordMessage, recordingColor, footerRef, updateHeight }) => {
+    const handleKeyDown = (e) => {
+        if (e.key == 'Enter' && !onPressEnter) {
+            sendMessage(e)
+        }
+    }
+
     return (
         <Box className="chat__footer" sx={{borderColor: 'border.main'}}>
                 <IconButton onClick={toggleEmoticons}>
@@ -17,6 +23,7 @@ const ChatFooter = ({ setShowEmoticons, toggleEmoticons, input, setInput, sendMe
                         onChange={(e) => setInput(e.target.value)}
                         onClick={() => setShowEmoticons(false)}
                         onInput={updateHeight}
+                        onKeyDown={handleKeyDown}
                         ref={footerRef}
                     />
                     <button type='submit' onClick={sendMessage}>
@@ -32,7 +39,7 @@ const ChatFooter = ({ setShowEmoticons, toggleEmoticons, input, setInput, sendMe
                     <SendIcon />
                 </IconButton>}
             </Box>
-    );
+    )
 }
  
 export default ChatFooter;

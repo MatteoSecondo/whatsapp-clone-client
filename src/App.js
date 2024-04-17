@@ -19,6 +19,7 @@ function App() {
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 840)
   const [theme, setTheme] = useState(localStorage.getItem('theme') === 'true' ? true : false)
   const [isLoading, setIsLoading] = useState(localStorage.getItem('accessToken') ? true : false)
+  const [onPressEnter, setOnPressEnter] = useState(localStorage.getItem('onPressEnter') === 'true' ? true : false)
 
   useEffect(() => {
     const handleResize = () => {
@@ -149,6 +150,7 @@ function App() {
               currentUser={currentUser}
               isSmallScreen={isSmallScreen}
               theme={theme}
+              onPressEnter={onPressEnter}
             /> :
             <Blank currentUser={currentUser} toggleDrawer={toggleDrawer} />
           }
@@ -161,7 +163,17 @@ function App() {
                               bottom: isSmallScreen ? '80px' : '10px',
                               left: isSmallScreen ? '10%' : '10px',
                               right: isSmallScreen ? '10%' : 'unset'} }}>
-            <Settings login={login} logOut={logOut} currentUser={currentUser} isSmallScreen={isSmallScreen} theme={theme} setTheme={setTheme} toggleDrawer={toggleDrawer} />
+            <Settings
+              login={login}
+              logOut={logOut} 
+              currentUser={currentUser}
+              isSmallScreen={isSmallScreen}
+              theme={theme}
+              setTheme={setTheme}
+              toggleDrawer={toggleDrawer}
+              onPressEnter={onPressEnter}
+              setOnPressEnter={setOnPressEnter}
+              />
           </Drawer>
 
           <Backdrop

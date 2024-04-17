@@ -10,7 +10,7 @@ import ChatBody from './basic/ChatBody'
 import ChatHeader from './basic/ChatHeader'
 import ChatFooter from './basic/ChatFooter'
 
-const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, currentUser, isSmallScreen, theme }) => {
+const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, currentUser, isSmallScreen, theme, onPressEnter }) => {
 
     const [input, setInput] = useState('')
     const [recordingColor, setRecordingColor] = useState(null)
@@ -219,6 +219,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
                 recordingColor={recordingColor}
                 footerRef={footerRef}
                 updateHeight={updateHeight}
+                onPressEnter={onPressEnter}
             />
 
             {showEmoticons &&

@@ -9,7 +9,7 @@ import Profile from './basic/Profile'
 import ChatSettings from './basic/ChatSettings'
 import CustomizationSettings from './basic/CustomizationSettings'
 
-const Settings = ({ login, logOut, currentUser, isSmallScreen, theme, setTheme, toggleDrawer }) => {
+const Settings = ({ login, logOut, currentUser, isSmallScreen, theme, setTheme, toggleDrawer, onPressEnter, setOnPressEnter }) => {
 
     const [currentTabIndex, setCurrentTabIndex] = useState(isSmallScreen ? 5: 0)
 
@@ -24,7 +24,7 @@ const Settings = ({ login, logOut, currentUser, isSmallScreen, theme, setTheme, 
                         <Tab label='Profile' icon={<AccountCircleIcon />} />
                     </Tabs>
 
-                    {(currentTabIndex === 0 || currentTabIndex === 5) && <ChatSettings />}
+                    {(currentTabIndex === 0 || currentTabIndex === 5) && <ChatSettings onPressEnter={onPressEnter} setOnPressEnter={setOnPressEnter} />}
                     {currentTabIndex === 1 && <CustomizationSettings theme={theme} setTheme={setTheme} />}
                     {currentTabIndex === 2 && <Profile login={login} logOut={logOut} currentUser={currentUser} />}
                 </div> :
@@ -52,7 +52,7 @@ const Settings = ({ login, logOut, currentUser, isSmallScreen, theme, setTheme, 
                         </div>
                     </>
                     }
-                    {currentTabIndex === 0 && <ChatSettings setCurrentTabIndex={setCurrentTabIndex} isSmallScreen={isSmallScreen} />}
+                    {currentTabIndex === 0 && <ChatSettings setCurrentTabIndex={setCurrentTabIndex} isSmallScreen={isSmallScreen} onPressEnter={onPressEnter} setOnPressEnter={setOnPressEnter} />}
                     {currentTabIndex === 1 && <CustomizationSettings setCurrentTabIndex={setCurrentTabIndex} isSmallScreen={isSmallScreen} theme={theme} setTheme={setTheme} />}
                     {currentTabIndex === 2 && <Profile login={login} logOut={logOut} currentUser={currentUser} setCurrentTabIndex={setCurrentTabIndex} isSmallScreen={isSmallScreen} />}
                 </div>
