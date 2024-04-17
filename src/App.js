@@ -18,7 +18,7 @@ function App() {
   const [openDrawer, setOpenDrawer] = useState(false)
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 840)
   const [theme, setTheme] = useState(localStorage.getItem('theme') === 'true' ? true : false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(localStorage.getItem('accessToken') ? true : false)
 
   useEffect(() => {
     const handleResize = () => {
@@ -64,6 +64,7 @@ function App() {
         }
       })
       .then((res) => {
+        setIsLoading(true)
         findOrCreateUser(res.data)
       })
       .catch((err) => console.log(err))
