@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import axios from './axios.js'
 import { useGoogleLogin, googleLogout } from '@react-oauth/google'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { Drawer, Box } from '@mui/material'
+import { Drawer, Box, Backdrop, CircularProgress } from '@mui/material'
 import Sidebar from './components/Sidebar.js'
 import Chat from './components/Chat.js'
 import Blank from './components/Blank.js'
@@ -18,6 +18,7 @@ function App() {
   const [openDrawer, setOpenDrawer] = useState(false)
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 840)
   const [theme, setTheme] = useState(localStorage.getItem('theme') === 'true' ? true : false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const handleResize = () => {
@@ -68,6 +69,10 @@ function App() {
       .catch((err) => console.log(err))
       }
   }, [googleUser])
+
+  useEffect(() => {
+    if (currentUser) setIsLoading(false)
+  }, [currentUser])
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => setGoogleUser(codeResponse),
@@ -157,6 +162,14 @@ function App() {
                               right: isSmallScreen ? '10%' : 'unset'} }}>
             <Settings login={login} logOut={logOut} currentUser={currentUser} isSmallScreen={isSmallScreen} theme={theme} setTheme={setTheme} toggleDrawer={toggleDrawer} />
           </Drawer>
+
+          <Backdrop
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={isLoading}
+          >
+            <CircularProgress color="inherit" />
+            <p>Logging in</p>
+          </Backdrop>
             
         </Box>
       </Box>
