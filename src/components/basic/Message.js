@@ -5,6 +5,10 @@ import DoneAllIcon from '@mui/icons-material/DoneAll'
 
 const Message = ({ message, index, currentUser, messagesRef, theme }) => {
 
+    const date = new Date(message.timestamp)
+    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}
+                            ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+
     useEffect(() => {
         async function sendIsRead() {
             await axios.put('/messages/seen', {messageId : message._id},{headers: {accessToken: localStorage.getItem('accessToken')}})
@@ -34,7 +38,7 @@ const Message = ({ message, index, currentUser, messagesRef, theme }) => {
             }
 
             <div className="chat__messageFooter">
-                <span className="chat__timestamp">{message.timestamp}</span>
+                <span className="chat__timestamp">{formattedDate}</span>
                 {message.sender._id === currentUser._id && <DoneAllIcon sx={{color: message.isRead && (theme ? 'cyan' : '#00b4d8')}} />}
             </div>
         </Box>

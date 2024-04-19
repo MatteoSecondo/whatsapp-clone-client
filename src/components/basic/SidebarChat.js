@@ -9,10 +9,22 @@ const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, theme }) 
 
     const [socket, setSocket] = useState(null)
     const lastMessage = chat.messages[chat.messages.length - 1]
+    let date
+    let formattedDate
+    if (lastMessage) {
+        date = new Date(lastMessage.timestamp)
+        formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}
+                                ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+    }
     const badgeNumber = chat.messages.filter(m => !m.isRead && m.sender._id !== currentUser._id).length
 
     useEffect(() => {
         const tempSocket = io(process.env.REACT_APP_SERVER_URL)
+
+        tempSocket.on('connect', () => {
+            tempSocket.emit('join', chat._id)
+            tempSocket.emit('onlineStatus c-s', {isOnline: currentUser.isOnline, lastAccess: currentUser.lastAccess, chatId: chat._id})
+        })
 
         tempSocket.on('server-client', (message) => {
             const decryptedData = decryptData(message, process.env.REACT_APP_ENCRYPTION_KEY)
@@ -38,15 +50,15 @@ const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, theme }) 
             })
         })
 
-        tempSocket.on('message-read', ({value, messageId}) => {
+        tempSocket.on('message-read', ({ value, messageId }) => {
             setCurrentUser((prevCurrentUser) => {
                 return {
                     ...prevCurrentUser,
-                    chats: prevCurrentUser.chats.map((chat) => {
-                        if (chat._id === chat._id) {
+                    chats: prevCurrentUser.chats.map((ch) => {
+                        if (ch._id === chat._id) {
                             return {
-                                ...chat,
-                                messages: chat.messages.map((mess) => {
+                                ...ch,
+                                messages: ch.messages.map((mess) => {
                                 if (mess._id === messageId) {
                                     return { ...mess, isRead: value }
                                 }
@@ -54,7 +66,7 @@ const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, theme }) 
                                 })
                             }
                         }
-                        return chat
+                        return ch
                     })
                 }
             })
@@ -76,7 +88,45 @@ const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, theme }) 
 
         })
 
-        tempSocket.on('connect', () => tempSocket.emit('join', chat._id))
+        tempSocket.on('onlineStatus s-c', ({ isOnline, lastAccess }) =>  {
+            setCurrentUser((prevCurrentUser) => {
+                return {
+                    ...prevCurrentUser,
+                    chats: prevCurrentUser.chats.map((ch) => {
+                        if (ch._id === chat._id) {
+                            return {
+                                ...ch,
+                                participants: ch.participants.map((p) => {
+                                    if (p._id !== currentUser._id) {
+                                        return { ...p, isOnline: isOnline, lastAccess: lastAccess }
+                                    }
+                                    return p
+                                })
+                            }
+                        }
+                        return ch
+                    })
+                }
+            })
+
+            setOpenChat((prevOpenChat) => {
+                if (prevOpenChat && prevOpenChat._id === chat._id) return {
+                    ...prevOpenChat,
+                    participants: prevOpenChat.participants.map((p) => {
+                        if (p._id !== currentUser._id) {
+                            return {
+                                ...p,
+                                isOnline: isOnline,
+                                lastAccess: lastAccess
+                            }
+                        }
+                        return p
+                    })
+                }
+                return prevOpenChat
+            })
+
+        })
 
         setSocket(tempSocket)
 
@@ -95,7 +145,7 @@ const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, theme }) 
             <div className="sidebarChat__info">
                 <div style={{display: 'flex', marginBottom: '8px'}}>
                     <h2>{chat.participants[0]._id !== currentUser._id ? chat.participants[0].name : chat.participants[1].name}</h2>
-                    <p className='sidebarChat__infoTimestamp'>{lastMessage && lastMessage.timestamp}</p>
+                    <p className='sidebarChat__infoTimestamp'>{lastMessage && formattedDate}</p>
                 </div>
    
                 <div style={{display: 'flex'}}>

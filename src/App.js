@@ -1,6 +1,7 @@
 import './App.css'
 import { useEffect, useState } from 'react'
 import axios from './axios.js'
+import io from 'socket.io-client'
 import { useGoogleLogin, googleLogout } from '@react-oauth/google'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { Drawer, Box, Backdrop, CircularProgress } from '@mui/material'
@@ -22,13 +23,13 @@ function App() {
   const [onPressEnter, setOnPressEnter] = useState(localStorage.getItem('onPressEnter') === 'true' ? true : false)
 
   useEffect(() => {
-    const handleResize = () => {
-      setWindowSize(window.innerWidth)
-    }
-
     window.addEventListener('resize', handleResize)
+    window.addEventListener('beforeunload', handleBeforeUnload)
 
-    return () => window.removeEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
   }, [])
 
   useEffect(() => {
@@ -76,12 +77,30 @@ function App() {
     if (currentUser) setIsLoading(false)
   }, [currentUser])
 
+  const handleResize = () => {
+    setWindowSize(window.innerWidth)
+  }
+
+  const handleBeforeUnload = (e) =>  {
+    e.preventDefault()
+    axios.put('/users/logout', {}, {headers: {accessToken: localStorage.getItem('accessToken')}})
+    googleLogout()
+  }
+
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => setGoogleUser(codeResponse),
     onError: (error) => alert('Login Failed:', error)
   })
 
-  const logOut = () => {
+  const logOut = async () => {
+
+    await axios.put('/users/logout', {}, {headers: {accessToken: localStorage.getItem('accessToken')}})
+
+    const socket = io(process.env.REACT_APP_SERVER_URL)
+    currentUser.chats.forEach((chat) => {
+      socket.emit('onlineStatus c-s', {isOnline: false, lastAccess: new Date(Date.now()), chatId: chat._id})
+    })
+
     googleLogout()
     setGoogleUser(null)
     setCurrentUser(null)
