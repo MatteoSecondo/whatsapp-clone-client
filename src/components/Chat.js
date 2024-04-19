@@ -12,6 +12,7 @@ import ChatFooter from './basic/ChatFooter'
 const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, currentUser, windowSize, theme, onPressEnter }) => {
 
     const [input, setInput] = useState('')
+    const [isTyping, setIsTyping] = useState(input === '' ? false : true)
     const [recordingColor, setRecordingColor] = useState(null)
     const [showEmoticons, setShowEmoticons] = useState(false)
 
@@ -60,6 +61,16 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
             setCurrentMessageIndex(openChat.messages.length - 1)
         }
     }, [openChat])
+
+    useEffect(() => { 
+        if (input === '') setIsTyping(false)
+        else setIsTyping(true)
+    }, [input])
+
+    useEffect(() => { 
+        if (!isTyping) openChat.socket.emit('isTyping c-s', { isTyping: false, chatId: openChat._id })
+        else openChat.socket.emit('isTyping c-s', { isTyping: true, chatId: openChat._id })
+    }, [isTyping])
 
     const sendMessage = async (e, blob = null) => {
         e.preventDefault()

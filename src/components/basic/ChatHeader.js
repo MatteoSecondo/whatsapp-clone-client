@@ -32,8 +32,9 @@ const ChatHeader = ({ showSearchInput, setShowSearchInput, closeSearchInput, sea
                 <Avatar src={currentUser && openChat.participants[0]._id !== currentUser._id ? openChat.participants[0].picture : openChat.participants[1].picture} />
                 <div className="chat__headerInfo">
                     <h3>{currentUser && openChat.participants[0]._id !== currentUser._id ? openChat.participants[0].name : openChat.participants[1].name}</h3>
-                    <p>{currentUser && openChat.participants[0]._id !== currentUser._id ? (openChat.participants[0].isOnline ? 'Online' : formattedDate0) :
-                        (openChat.participants[1].isOnline ? 'Online' : formattedDate1)}</p>
+                    <p>{currentUser && openChat.participants[0]._id !== currentUser._id ?
+                        (openChat.participants[0].isOnline ? (openChat.participants[0].isTyping ? 'Typing...' : 'Online') : formattedDate0) :
+                        (openChat.participants[1].isOnline ? (openChat.participants[1].isTyping ? 'Typing...' : 'Online') : formattedDate1)}</p>
                 </div>
 
                 <div className="chat__headerRight">

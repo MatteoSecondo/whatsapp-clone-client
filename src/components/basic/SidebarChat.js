@@ -11,11 +11,13 @@ const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, theme }) 
     const lastMessage = chat.messages[chat.messages.length - 1]
     let date
     let formattedDate
+
     if (lastMessage) {
         date = new Date(lastMessage.timestamp)
         formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}
                                 ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
     }
+
     const badgeNumber = chat.messages.filter(m => !m.isRead && m.sender._id !== currentUser._id).length
 
     useEffect(() => {
@@ -128,6 +130,44 @@ const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, theme }) 
 
         })
 
+        tempSocket.on('isTyping s-c', ({ value }) => {
+            setCurrentUser((prevCurrentUser) => {
+                return {
+                    ...prevCurrentUser,
+                    chats: prevCurrentUser.chats.map((ch) => {
+                        if (ch._id === chat._id) {
+                            return {
+                                ...ch,
+                                participants: ch.participants.map((p) => {
+                                    if (p._id !== currentUser._id) {
+                                        return { ...p, isTyping: value }
+                                    }
+                                    return p
+                                })
+                            }
+                        }
+                        return ch
+                    })
+                }
+            })
+
+            setOpenChat((prevOpenChat) => {
+                if (prevOpenChat && prevOpenChat._id === chat._id) return {
+                    ...prevOpenChat,
+                    participants: prevOpenChat.participants.map((p) => {
+                        if (p._id !== currentUser._id) {
+                            return {
+                                ...p,
+                                isTyping: value
+                            }
+                        }
+                        return p
+                    })
+                }
+                return prevOpenChat
+            })
+        })
+
         setSocket(tempSocket)
 
         return () => {tempSocket.disconnect(); setSocket(null)}
@@ -149,10 +189,23 @@ const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, theme }) 
                 </div>
    
                 <div style={{display: 'flex'}}>
-                    {lastMessage && lastMessage.sender._id === currentUser._id &&
-                        <DoneAllIcon sx={{color: lastMessage.isRead && (theme ? 'cyan' : '#00b4d8')}} />
+                    {currentUser && chat.participants[0]._id !== currentUser._id ?
+                        !chat.participants[0].isTyping && lastMessage && lastMessage.sender._id === currentUser._id && 
+                            <DoneAllIcon sx={{color: lastMessage.isRead && (theme ? 'cyan' : '#00b4d8')}} /> :
+                        !chat.participants[1].isTyping && lastMessage && lastMessage.sender._id === currentUser._id &&
+                            <DoneAllIcon sx={{color: lastMessage.isRead && (theme ? 'cyan' : '#00b4d8')}} />
                     }
-                    {chat.messages.length ? (<p className='sidebarChat__infoText'>{lastMessage && (lastMessage.text || 'Audio')}</p>) : <p>Type a message</p>}
+
+                    {chat.messages.length ? 
+                        <div className='sidebarChat__infoText'>
+                            {currentUser && chat.participants[0]._id !== currentUser._id ?
+                                chat.participants[0].isTyping ? <p>Typing...</p> : lastMessage && (lastMessage.text || 'Audio') :
+                                chat.participants[1].isTyping  ? <p>Typing...</p> : lastMessage && (lastMessage.text || 'Audio')
+                            }
+                        </div> :
+                        <p>Type a message</p>
+                    }
+
                     {badgeNumber > 0 && <p className='sidebarChat__infoBadge'>{badgeNumber}</p>}
                 </div>
             </div>

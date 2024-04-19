@@ -17,6 +17,11 @@
     width: 85%;
 }
 
+.sidebarChat__infoText > p {
+    color: #228b22;
+    font-weight: 500;
+}
+
 .sidebarChat__infoTimestamp {
    font-size: x-small;
    display: flex;
