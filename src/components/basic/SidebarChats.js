@@ -5,7 +5,14 @@ const SidebarChats = ({ currentUser, setCurrentUser, searchString, setOpenChat, 
         <div className="sidebarChats">
 
             {searchString === '' && currentUser &&
-                currentUser.chats.map(chat => (
+                currentUser.chats
+                .slice()
+                .sort((a, b) => {
+                    const timestampA = new Date(a.messages[a.messages.length - 1]?.timestamp || Date.now())
+                    const timestampB = new Date(b.messages[b.messages.length - 1]?.timestamp || Date.now())
+                    return timestampB - timestampA
+                })
+                .map(chat => (
                     <SidebarChat
                         key={chat._id}
                         chat={chat}

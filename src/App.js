@@ -39,10 +39,27 @@ function App() {
       else {
         const fullCurrentUser = await axios.get('/users/populate', {headers: {accessToken: localStorage.getItem('accessToken')}})
         setCurrentUser(fullCurrentUser.data)
+
+        socket.emit('join', fullCurrentUser.data._id)
+        socket.on('newChat', (newChat) => {
+          console.log(newChat)
+          newChat.participants.forEach(participant => {
+            if (participant._id === fullCurrentUser.data._id) {
+              setCurrentUser((prevCurrentUser) => {
+                return {
+                    ...prevCurrentUser,
+                    chats: [...prevCurrentUser.chats, newChat]
+                }
+              })
+            }
+          })
+        })
       }
     }
-    
+
+    const socket = io(process.env.REACT_APP_SERVER_URL)
     checkAuth()
+    return () => socket.disconnect()
   }, [])
 
   useEffect(() => {

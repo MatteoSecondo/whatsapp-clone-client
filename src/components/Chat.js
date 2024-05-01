@@ -88,7 +88,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
         if (openChat.new) {
             messagesRef.current = []
             const newChat = await createNewChat(openChat.participants[0]._id)
-            setOpenChat(newChat)
+            setOpenChat({...newChat, socket: openChat.socket})
             
             const updatedUser = {...currentUser}
             updatedUser.chats.push(newChat)
@@ -109,6 +109,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
                 const base64String = event.target.result
                 message.audio = base64String
                 const encryptedData = encryptData(message, process.env.REACT_APP_ENCRYPTION_KEY)
+                if (!openChat.socket.connected) openChat.socket.connect()
                 openChat.socket.emit('client-server', encryptedData)
             }
             
@@ -121,6 +122,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
         else {
             message.text = tempInput
             const encryptedData = encryptData(message, process.env.REACT_APP_ENCRYPTION_KEY)
+            if (!openChat.socket.connected) openChat.socket.connect()
             openChat.socket.emit('client-server', encryptedData)
         }
 
