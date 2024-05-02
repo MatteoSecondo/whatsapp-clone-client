@@ -16,10 +16,10 @@ const ChatHeader = ({ showSearchInput, setShowSearchInput, closeSearchInput, sea
     const [anchorEl, setAnchorEl] = useState(null)
     const open = Boolean(anchorEl)
     const lastAccess0 = new Date(openChat.participants[0].lastAccess)
-    const formattedDate0 = `${lastAccess0.getFullYear()}-${(lastAccess0.getMonth() + 1).toString().padStart(2, '0')}-${lastAccess0.getDate().toString().padStart(2, '0')}
+    const formattedDate0 = `${lastAccess0.getDate().toString().padStart(2, '0')}-${(lastAccess0.getMonth() + 1).toString().padStart(2, '0')}-${lastAccess0.getFullYear()}
                             ${lastAccess0.getHours().toString().padStart(2, '0')}:${lastAccess0.getMinutes().toString().padStart(2, '0')}`
     const lastAccess1 = new Date(openChat.participants[1].lastAccess)
-    const formattedDate1 = `${lastAccess1.getFullYear()}-${(lastAccess1.getMonth() + 1).toString().padStart(2, '0')}-${lastAccess1.getDate().toString().padStart(2, '0')}
+    const formattedDate1 = `${lastAccess1.getDate().toString().padStart(2, '0')}-${(lastAccess1.getMonth() + 1).toString().padStart(2, '0')}-${lastAccess1.getFullYear()}
                             ${lastAccess1.getHours().toString().padStart(2, '0')}:${lastAccess1.getMinutes().toString().padStart(2, '0')}`
 
 

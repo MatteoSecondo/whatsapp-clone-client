@@ -9,7 +9,7 @@ import Profile from './basic/Profile'
 import ChatSettings from './basic/ChatSettings'
 import CustomizationSettings from './basic/CustomizationSettings'
 
-const Settings = ({ login, logOut, currentUser, windowSize, theme, setTheme, toggleDrawer, onPressEnter, setOnPressEnter }) => {
+const Settings = ({ login, logOut, currentUser, windowSize, theme, setTheme, toggleDrawer, onPressEnter, setOnPressEnter, setBackground }) => {
 
     const [currentTabIndex, setCurrentTabIndex] = useState(windowSize < 840 ? 5: 0)
 
@@ -24,9 +24,15 @@ const Settings = ({ login, logOut, currentUser, windowSize, theme, setTheme, tog
                         <Tab label='Profile' icon={<AccountCircleIcon />} />
                     </Tabs>
 
-                    {(currentTabIndex === 0 || currentTabIndex === 5) && <ChatSettings onPressEnter={onPressEnter} setOnPressEnter={setOnPressEnter} />}
-                    {currentTabIndex === 1 && <CustomizationSettings theme={theme} setTheme={setTheme} />}
-                    {currentTabIndex === 2 && <Profile login={login} logOut={logOut} currentUser={currentUser} />}
+                    {(currentTabIndex === 0 || currentTabIndex === 5) &&
+                        <ChatSettings onPressEnter={onPressEnter} setOnPressEnter={setOnPressEnter} />
+                    }
+                    {currentTabIndex === 1 && 
+                        <CustomizationSettings theme={theme} setTheme={setTheme} setBackground={setBackground} />
+                    }
+                    {currentTabIndex === 2 &&
+                        <Profile login={login} logOut={logOut} currentUser={currentUser} />
+                    }
                 </div> :
 
                 <div className='settings__div'>
@@ -52,9 +58,15 @@ const Settings = ({ login, logOut, currentUser, windowSize, theme, setTheme, tog
                         </div>
                     </>
                     }
-                    {currentTabIndex === 0 && <ChatSettings setCurrentTabIndex={setCurrentTabIndex} windowSize={windowSize} onPressEnter={onPressEnter} setOnPressEnter={setOnPressEnter} />}
-                    {currentTabIndex === 1 && <CustomizationSettings setCurrentTabIndex={setCurrentTabIndex} windowSize={windowSize} theme={theme} setTheme={setTheme} />}
-                    {currentTabIndex === 2 && <Profile login={login} logOut={logOut} currentUser={currentUser} setCurrentTabIndex={setCurrentTabIndex} windowSize={windowSize} />}
+                    {currentTabIndex === 0 &&
+                        <ChatSettings setCurrentTabIndex={setCurrentTabIndex} windowSize={windowSize} onPressEnter={onPressEnter} setOnPressEnter={setOnPressEnter} />
+                    }
+                    {currentTabIndex === 1 &&
+                        <CustomizationSettings setCurrentTabIndex={setCurrentTabIndex} windowSize={windowSize} theme={theme} setTheme={setTheme} setBackground={setBackground} />
+                    }
+                    {currentTabIndex === 2 &&
+                        <Profile login={login} logOut={logOut} currentUser={currentUser} setCurrentTabIndex={setCurrentTabIndex} windowSize={windowSize} />
+                    }
                 </div>
             }            
 

@@ -21,6 +21,7 @@ function App() {
   const [theme, setTheme] = useState(localStorage.getItem('theme') === 'true' ? true : false)
   const [isLoading, setIsLoading] = useState(localStorage.getItem('accessToken') ? true : false)
   const [onPressEnter, setOnPressEnter] = useState(localStorage.getItem('onPressEnter') === 'true' ? true : false)
+  const [background, setBackground] = useState(localStorage.getItem('background') ? localStorage.getItem('background') : 'http://hdwpro.com/wp-content/uploads/2020/02/Green-Whatsapp-Wallpaper.jpg')
 
   useEffect(() => {
     window.addEventListener('resize', handleResize)
@@ -187,6 +188,7 @@ function App() {
               windowSize={windowSize}
               theme={theme}
               onPressEnter={onPressEnter}
+              background={background}
             /> :
             <Blank currentUser={currentUser} toggleDrawer={toggleDrawer} />
           }
@@ -209,6 +211,7 @@ function App() {
               toggleDrawer={toggleDrawer}
               onPressEnter={onPressEnter}
               setOnPressEnter={setOnPressEnter}
+              setBackground={setBackground}
               />
           </Drawer>
 

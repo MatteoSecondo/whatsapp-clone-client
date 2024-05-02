@@ -3,7 +3,7 @@ import { IconButton } from "@mui/material"
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import Message from "./Message"
 
-const ChatBody = ({ messages, messagesRef, scrollToMessage, currentUser, anchorRef, theme }) => {
+const ChatBody = ({ messages, messagesRef, scrollToMessage, currentUser, anchorRef, theme, background }) => {
 
     const [showReturnToLastMessage, setShowReturnToLastMessage] = useState(false)
     const ref = useRef()
@@ -16,7 +16,7 @@ const ChatBody = ({ messages, messagesRef, scrollToMessage, currentUser, anchorR
 
     return (
         <div className="chat__anchor" ref={anchorRef}>
-            <div className="chat__body" onWheel={checkIfShowReturnToLastMessage} ref={ref}>
+            <div className="chat__body" onWheel={checkIfShowReturnToLastMessage} ref={ref} style={{ backgroundImage: `url(${background})` }}>
 
                     {messages && messages.map((message, index) => 
                         <Message

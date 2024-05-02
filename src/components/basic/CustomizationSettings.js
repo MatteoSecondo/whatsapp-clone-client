@@ -1,8 +1,9 @@
 import { IconButton, Switch, FormControlLabel } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import CustomImageList from './CustomImageList'
 
-const CustomizationSettings = ({ setCurrentTabIndex, windowSize, theme, setTheme }) => {
+const CustomizationSettings = ({ setCurrentTabIndex, windowSize, theme, setTheme, setBackground }) => {
 
     const MaterialUISwitch = styled(Switch)(({ theme }) => ({
         width: 62,
@@ -66,6 +67,8 @@ const CustomizationSettings = ({ setCurrentTabIndex, windowSize, theme, setTheme
               label='Theme'
               labelPlacement='start'
             />
+
+            <CustomImageList setBackground={setBackground} windowSize={windowSize} />
         </div>
     )
 }

@@ -9,7 +9,7 @@ import ChatBody from './basic/ChatBody'
 import ChatHeader from './basic/ChatHeader'
 import ChatFooter from './basic/ChatFooter'
 
-const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, currentUser, windowSize, theme, onPressEnter }) => {
+const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, currentUser, windowSize, theme, onPressEnter, background }) => {
 
     const [input, setInput] = useState('')
     const [isTyping, setIsTyping] = useState(input === '' ? false : true)
@@ -221,6 +221,7 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
                 currentUser={currentUser}
                 anchorRef={anchorRef}
                 theme={theme}
+                background={background}
             />
 
             <ChatFooter 
