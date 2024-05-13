@@ -93,7 +93,6 @@ const Chat = ({ openChat, setOpenChat, setChatSearchString, setCurrentUser, curr
             const updatedUser = {...currentUser}
             updatedUser.chats.push(newChat)
             setCurrentUser(updatedUser)
-
             chatId = newChat._id
         }
         else chatId = openChat._id

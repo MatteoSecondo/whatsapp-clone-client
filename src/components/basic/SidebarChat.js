@@ -30,6 +30,8 @@ const SidebarChat = ({ chat, setOpenChat, currentUser, setCurrentUser, theme }) 
 
         tempSocket.on('server-client', (message) => {
             const decryptedData = decryptData(message, process.env.REACT_APP_ENCRYPTION_KEY)
+
+            console.log(decryptedData)
             
             setCurrentUser((prevCurrentUser) => {
                 return {

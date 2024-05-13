@@ -43,7 +43,6 @@ function App() {
 
         socket.emit('join', fullCurrentUser.data._id)
         socket.on('newChat', (newChat) => {
-          console.log(newChat)
           newChat.participants.forEach(participant => {
             if (participant._id === fullCurrentUser.data._id) {
               setCurrentUser((prevCurrentUser) => {
